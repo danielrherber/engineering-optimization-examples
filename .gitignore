@@ -1,0 +1,12 @@
+!.gitignore
+
+# ignore certain file extensions
+*.ini
+*.asv
+*.sublime-project
+*.sublime-workspace
+
+# ignore certain folders
+.private*/
+
+# ignore specific files
