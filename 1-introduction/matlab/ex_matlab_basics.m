@@ -2,7 +2,6 @@
 close all % closes all figures
 clear % removes all variables from the current workspace
 clc % clears all the text from the Command Window
-help clc % displays the help text for clc (clc could be any function/script)
 
 %% Basic Syntax
 5+3 % addition
@@ -13,11 +12,12 @@ help clc % displays the help text for clc (clc could be any function/script)
 [1 2].^[3 4] % array exponentiation operator
 [1 2; 3 4]\[1; 2] % left-division, solve systems of linear equations A*x = b for x
 5/3 % right-division operator
-% .\ 	% array left-division operator
+[1 2].\[3 4] % % array left-division operator
 [1 2]./[3 4] % array right-division operator
 [1 2]' % matrix transpose; for complex matrices, is the complex conjugate transpose
 [1 2].' % array transpose
-disp('Hello World') % display something to the command window
+disp("Hello World") % display something to the command window
+help disp % displays the help text for disp (disp could be any function/script)
 % : % colon; generates regularly spaced elements and represents an entire row or column
 % ( ) % parentheses; encloses function arguments and array indices; overrides precedence
 % [ ] % brackets; enclosures array elements
@@ -60,9 +60,11 @@ whos % list variables in workspace, with sizes and types
 a = [ 1 2 3 4 5; 2 3 4 5 6; 3 4 5 6 7; 4 5 6 7 8];
 a(2,5) % reference the 2nd row and 5th column of a
 v = a(:,4) % extract 4th column of a
-q = a(2:3, :) % extract 2nd and 3rd rows of a
-a(4 , :) = [] % delete 4th row of a
+q = a(2:3,:) % extract 2nd and 3rd rows of a
+a(4,:) = [] % delete 4th row of a
 a(:,[1 3]) = [] % delete 1st and 3rd columns of a
+a(end,:) % last row of a
+a(:,end-1:end) % last and 2nd to last columns of a
 
 %% Vector, Matrix, and Array Commands
 find([1 0 1]) % finds indices of nonzero elements
@@ -82,6 +84,30 @@ inv([1 2; 3 4]) % computes inverse of a matrix
 pinv([1 2]) % computes pseudoinverse of a matrix
 rank([1 1; 1 1]) % computes rank of a matrix
 
+%% Strings and Character Arrays
+x = "Hello"; x(1) % string treats each phrase as a unit
+y = 'World'; y(1) % char treats each character as a unit
+z = ["Hello", "Hi"]; z(1) % string array example
+w = {'World', 'Earth'}; w{1} % char array example
+strcat(x,y) % concatenate strings horizontally
+strsplit(x,"l") % split string at specified delimiter
+strfind(y,"or") % find one string within another
+strrep(x,"l","!") % find and replace substring
+strcmp(x,y) % compare strings (case sensitive)
+strcmpi("A","a") % compare strings (case insensitive)
+
+%% Functions
+%--- function definition example
+% function y = f(x) % actual definition below
+%     y = sin(x);
+% end
+f(1,2) % function definition usage
+%--- anonymous function example
+g = @(x,p) sin(x) + p; % anonymous function definition
+g(1,3) % anonymous function usage
+%--- pass a parameter into a function
+fzero(@(x) f(x,0.5), 1)
+
 %% Plotting Commands
 figure % opens a new figure window
 hold on % retains existing objects so that new objects added to figure
@@ -95,6 +121,7 @@ text(1.4,3.8,"text") % places string in figure
 %% Decision Making and Loops
 % break % terminates the loop statement and transfers execution to the statement immediately following the loop
 % continue % causes the loop to skip the remainder of its body and immediately retest its condition prior to reiterating
+% return % return control to invoking script or function
 %--- if, elseif, else statement example
 x = 2;
 if x > 2
@@ -126,16 +153,6 @@ for k = 1:4
     disp(x)
 end
 
-%% Functions
-%--- function definition example
-% function y = f(x) % actual definition below
-%     y = sin(x);
-% end
-f(1,2) % function definition usage
-%--- anonymous function example
-g = @(x,p) sin(x) + p; % anonymous function definition
-g(1,3) % anonymous function usage
-
 %% Calculus (with the Symbolic Toolbox)
 syms x y % create symbolic scalar variables and functions, and matrix variables and functions
 s = sin(x); % symbolic function
@@ -150,10 +167,11 @@ jacobian([sin(x+y); x*y],[x y]) % jacobian matrix
 solve(x^2 + 2*x == 1, x) % equations and systems solver
 vpasolve(x^2 + 2*x == 1, x) % solve equations numerically
 
-%% More Information at can be Found at:
-% https://www.tutorialspoint.com/matlab/matlab_commands.htm
-
 %% Function Definitions
 function y = f(x,p)
     y = sin(x) + p;
 end
+
+%% More Information at can be Found at:
+% https://www.tutorialspoint.com/matlab/matlab_commands.htm
+% https://www.mathworks.com/help/matlab/language-fundamentals.html
