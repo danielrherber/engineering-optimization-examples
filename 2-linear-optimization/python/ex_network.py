@@ -1,4 +1,4 @@
-import numpy as np 
+import numpy as np
 from scipy.optimize import linprog
 import networkx as nx # needed for visualization
 import matplotlib.pyplot as plt
@@ -24,7 +24,7 @@ UB = 30*np.ones((11,))
 # combine bounds and reshape
 bounds = np.vstack([LB,UB]); bounds = bounds.T
 
-# specify method 
+# specify method
 method = 'highs'
 
 # linprog options

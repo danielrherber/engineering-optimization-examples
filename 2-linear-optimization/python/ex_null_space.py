@@ -1,5 +1,5 @@
-import numpy as np 
-from scipy.linalg import null_space 
+import numpy as np
+from scipy.linalg import null_space
 from numpy.random import rand
 
 # data

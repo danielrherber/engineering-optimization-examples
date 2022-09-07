@@ -1,32 +1,31 @@
-import numpy as np 
+import numpy as np
 from scipy.optimize import minimize ,LinearConstraint,Bounds
 
 
 def travel_time(x,*p):
-    
+
     # extract
     t = p[0]; a = p[1]; c = p[2]
-    
-    # calculate total travel time 
+
+    # calculate total travel time
     f = x*(t + a*(x/(np.ones((5,))-(x/c))))
-    
+
     f = np.sum(f)
-    
+
     return f
 
 def calc_jac(x,*p):
-    
+
     # extract
     t = p[0]; a = p[1]; c = p[2]
-    
+
     t0 = x*a
-    
+
     t1 = 1-x/c
-    
+
     jac = t + 2*t0/t1 + t0*x/(t1*t1)/c
-    
+
     return jac
-    
 
 # problem data
 t = np.array([0.1,0.14,0.13,0.25,0.12]) # constant travel time [hour]
