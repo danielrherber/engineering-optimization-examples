@@ -1,9 +1,9 @@
-import numpy as np 
+import numpy as np
 from scipy.optimize import linprog
 import networkx as nx
 import matplotlib.pyplot as plt
 
-# problem data 
+# problem data
 c = np.array([11,5,2,15,12,8,3,1,10])
 
 # equality constraints
@@ -22,7 +22,7 @@ UB = np.ones((len(c),))
 # combine bounds and reshape
 bounds = np.vstack([LB,UB]); bounds = bounds.T
 
-# specify method 
+# specify method
 method = 'highs'
 
 # linprog options
