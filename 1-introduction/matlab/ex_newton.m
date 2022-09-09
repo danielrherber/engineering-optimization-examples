@@ -1,7 +1,7 @@
 close all; clear; clc
 
 % select the example number (see cases below)
-example_number = 3;
+example_number = 1;
 
 switch example_number
     case 1 % One-dimensional Example
@@ -9,8 +9,8 @@ switch example_number
         fd = @(x) [28 9 4 9]*[x^3 x^2 x^1 x^0]';
         X(1) = 0; % initial point
         n = 8; % number of iterations
-        xmin = -1.5; % minimum x value for plotting
-        xmax = 0.5; % maximum x value for plotting
+        xmin = -1.25; % minimum x value for plotting
+        xmax = 0.25; % maximum x value for plotting
     case 2 % One-dimensional Example when f'(x*) = 0
         f = @(x) [1 -7 17 -17 6]*[x^4 x^3 x^2 x^1 x^0]';
         fd = @(x) [4 -21 34 -17]*[x^3 x^2 x^1 x^0]';
@@ -18,7 +18,14 @@ switch example_number
         n = 25; % number of iterations
         xmin = 0.5; % minimum x value for plotting
         xmax = 3; % maximum x value for plotting
-    case 3 % Multidimensional Case
+    case 3 % Failure of Newton's Method
+        f = @(x) (exp(x) - exp(-x))/(exp(x) + exp(-x));
+        fd = @(x) 4*exp(2*x)/(exp(2*x) + 1)^2;
+        X(1) = 1.1; % initial point (try 1 and 1.1)
+        n = 10; % number of iterations
+        xmin = -6; % minimum x value for plotting
+        xmax = 6; % maximum x value for plotting
+    case 4 % Multidimensional Case
         f = @(x) [3*x(1)*x(2) + 7*x(1) + 2*x(2) - 3;...
             5*x(1)*x(2) - 9*x(1) - 4*x(2) + 6];
         fd = @(x) [3*x(2) + 7, 3*x(1) + 2; 5*x(2) - 9, 5*x(1) - 4];
@@ -26,20 +33,13 @@ switch example_number
         n = 10; % number of iterations
         xmin = -6; % minimum x value for plotting
         xmax = 6; % maximum x value for plotting
-    case 4 % Failure of Newton’s Method
-        f = @(x) (exp(x) - exp(-x))/(exp(x) + exp(-x));
-        fd = @(x) 4*exp(2*x)/(exp(2*x) + 1)^2;
-        X(1) = 1.1; % initial point (try 1 and 1.1)
-        n = 10; % number of iterations
-        xmin = -6; % minimum x value for plotting
-        xmax = 6; % maximum x value for plotting
 end
 
-% create plot (see below)
-if isscalar(X(:,1)) % 1-d case
-    plot_start_1d(X,f,xmin,xmax)
+% create plot (see below for the functions)
+if isscalar(X(:,1))
+    plot_start_1d(X,f,xmin,xmax) % 1-d case
 else
-    plot_start_2d(X,f,xmin,xmax)
+    plot_start_2d(X,f,xmin,xmax) % 2-d case
 end
 
 % go through each iteration
@@ -54,25 +54,11 @@ for k = 1:n
     % extract current value
     x_ = X(:,k+1);
 
-    % check if 1-d or 2-d case
-    if isscalar(x_) % 1-d case
-
-        % plot current point
-        plot(x_,f(x_),'r.','markersize',16)
-
-        % display stuff
-        disp(strcat(string(k)," x:",...
-            string(vpa(x_,16))," f(x):",string(vpa(f(x_),16))))
-    else % 2-d case
-
-        hold on
-        % plot current point
-        plot3(x_(1),x_(2),norm(f(x_)),'r.','markersize',16)
-
-        % display stuff
-        disp(strcat(string(k)," x1:",string(vpa(x_(1),16)),...
-            " x2:",string(vpa(x_(2),16))," e:",string(vpa(norm(f(x_)),16))))
-
+    % plot iteration (see below for the functions)
+    if isscalar(x_)
+        plot_1d(x_,f,k,X(:,k),fd) % 1-d case
+    else
+        plot_2d(x_,f,k) % 2-d case
     end
 
 end
@@ -98,12 +84,29 @@ xk1 = xk + p;
 
 end
 
-% plotting function for 1d case
+%--------------------------------------------------------------------------
+% plotting functions for 1d case
+function plot_1d(x,f,k,xold,fd)
+
+% plot tangent line
+X = linspace(xold,x,2);
+plot(X,f(xold) + fd(xold)*(X-xold),'m--','linewidth',1.5)
+plot([x x],[0 f(x)],'k--','linewidth',1.5)
+
+% plot next point
+plot(x,f(x),'r.','markersize',24)
+
+% display stuff
+disp(strcat(string(k)," x:",string(vpa(x,16))," f(x):",string(vpa(f(x),16))))
+
+end
+
 function plot_start_1d(X,f,xmin,xmax)
 
 hf = figure; hold on
 hf.Color = 'w';
 ha = gca;
+xlim([xmin xmax])
 ha.LineWidth = 1;
 ha.FontSize = 14;
 xlabel('x')
@@ -115,11 +118,23 @@ for k = 1:length(Xg)
 end
 plot([xmin xmax],[0 0],'b-','linewidth',1.5) % desired value
 plot(Xg,Fg,'k','linewidth',1.5) % function value
-plot(X(:,1),f(X(:,1)),'g.','markersize',16) % initial point
+plot(X(:,1),f(X(:,1)),'g.','markersize',24) % initial point
 
 end
 
-% plotting function for 2d case
+%--------------------------------------------------------------------------
+% plotting functions for 2d case
+function plot_2d(x,f,k)
+
+% plot current point
+plot3(x(1),x(2),norm(f(x)),'r.','markersize',24)
+
+% display stuff
+disp(strcat(string(k)," x1:",string(vpa(x(1),24)),...
+    " x2:",string(vpa(x(2),16))," e:",string(vpa(norm(f(x)),16))))
+
+end
+
 function plot_start_2d(X,f,xmin,xmax)
 
 hf = figure; hold on
@@ -139,6 +154,6 @@ for k = 1:numel(X1)
 end
 
 contourf(X1,X2,log(E),40) % plot errors
-plot(X(1),X(2),'g.','markersize',16) % initial point
+plot(X(1),X(2),'g.','markersize',24) % initial point
 
 end
