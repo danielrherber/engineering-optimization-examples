@@ -28,6 +28,11 @@ OPTIONS.Display = 'iter';
 %% visualize the solution
 hf = figure; hf.Color = 'w'; hold on
 
+% colors
+niceblue = [77, 121, 167]/255;
+nicered = [225, 86, 86]/255;
+nicegreen = [109, 195, 80]/255;
+
 s = [1 1 1 2 2 2 3 3 3];
 t = [4 5 6 4 5 6 4 5 6];
 weights = c;
@@ -37,9 +42,11 @@ G = digraph(s,t,weights,names);
 LWidths = 4*G.Edges.Weight/max(G.Edges.Weight);
 
 EdgeColor = repmat([0 0 0],length(c),1);
-EdgeColor(logical(X),:) = repmat([1 0 0],sum(X),1);
+EdgeColor(logical(X),:) = repmat(nicegreen,sum(X),1);
 
 hp = plot(G,'LineWidth',LWidths,'Layout','layered',...
     'Direction','right','EdgeColor',EdgeColor);
+
+hp.NodeColor = nicered;
 
 axis off
