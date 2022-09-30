@@ -126,3 +126,4 @@ YData(8) = 28.116+5;
 hp.YData = YData;
 
 axis off
+axis equal
