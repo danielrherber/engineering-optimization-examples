@@ -9,12 +9,12 @@ switch test
         b = [2; 7; 3];
         c = [-1; -2; 0; 0; 0];
         x = [0; 0; 2; 7; 3];
-    case 2 % Example for the Two-phase Method Continued (Phase 1)
+    case 2 % Example for the Two-phase Method Continued (Phase 1) [Griva, LNO, p.149]
         A = [3 2 0 0 1 0; 2 -4 -1 0 0 1; 4 3 0 1 0 0];
         b = [14 2 19]';
         c = [0 0 0 0 1 1]';
         x = [0 0 0 19 14 2]';
-    case 3 % Example for the Two-phase Method Continued (Phase 2)
+    case 3 % Example for the Two-phase Method Continued (Phase 2) [Griva, LNO, p.149]
         A = [3 2 0 0; 2 -4 -1 0; 4 3 0 1];
         b = [14 2 19]';
         c = [2 3 0 0]';
