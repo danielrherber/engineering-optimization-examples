@@ -1,47 +1,68 @@
 close all; clear; clc
 
-test = 1;
+test = 4;
 
-updateformulaflag = 1;
+updateformulaflag = 2; % 1: symmetric rank-one update, 2:BFGS
 
 switch test
-
-    case 1 % Example 12.9 from LNO
+    %----------------------------------------------------------------------
+    case 1 % Quadratic function Example 12.9 from LNO
+        quadraticFlag = true; % is this a quadratic function?
         Q = diag([2,3,4]); % x'*Q*x/2
         c = [-8;-9;-8]; % c'*x
+        x0 = zeros(size(Q,1),1); % initial point
         B = eye(length(Q)); % initial approximate hessian matrix
-        x = zeros(size(Q,1),1); % initial point
-    case 2
+    %----------------------------------------------------------------------
+    case 2 % randomized 3d quadratic function example
+        quadraticFlag = true; % is this a quadratic function?
         rng(3253) % set random seed
         q = rand(3);
         Q = q+q'; % x'*Q*x/2
         c = [-8;-9;-8]; % c'*x
+        x0 = zeros(size(Q,1),1); % initial point
         B = eye(length(Q)); % initial approximate hessian matrix
-        x = zeros(size(Q,1),1); % initial point
-    case 3
+    %----------------------------------------------------------------------
+    case 3 % randomized nd quadratic function example
+        quadraticFlag = true; % is this a quadratic function?
         rng(5754) % set random seed
         n = 20;
         q = rand(n);
         Q = q + q'+ 8*eye(n); % x'*Q*x/2
         c = rand(n,1); % c'*x
-        B = eye(length(Q)); % initial approximate hessian matrix
-        x = zeros(size(Q,1),1); % initial point
+        x0 = zeros(n,1); % initial point
+        B = eye(n); % initial approximate hessian matrix
+    %----------------------------------------------------------------------
+    case 4 % nonlinear 2d example
+        quadraticFlag = false; % is this a quadratic function?
+        n = 2; x = sym('x',[n 1]); % create symbolic variables
+        f = x(1)^4 + 2*x(1)^3 + 24*x(1)^2 + x(2)^4 + 12*x(2)^2; % objective function
+        B = eye(n); % initial approximate hessian matrix
+        x0 = [2; 1]; % initial point
 end
 
-% exact gradient
-G = @(x) Q*x - c;
-
-% extract hessian
-H = @(x) Q;
+% create problem functions
+if quadraticFlag
+    G = @(x) Q*x - c; % exact gradient
+    H = @(x) Q; % exact hessian
+else
+    g = gradient(f,x); % exact gradient
+    h = hessian(f,x); % exact hessian
+    F = matlabFunction(f,'Vars',{x}); % objective function
+    G = matlabFunction(g,'Vars',{x}); % gradient
+    H = matlabFunction(h,'Vars',{x}); % hessian
+end
 
 % maximum number of iterations
 max_iterations = 100;
 
 % compute initial gradient
-g = G(x);
+g = G(x0);
+
+% assign initial value
+x = x0;
 
 % go through each iteration
-for iteration = 1:max_iterations
+for iteration = 0:max_iterations-1
 
     % (i) check if xk is optimal
     if norm(g,inf) <= 100*(eps)
@@ -56,11 +77,22 @@ for iteration = 1:max_iterations
     p = -B\g;
     disp_helper("p",p)
 
-    % (iii) using exact line search
-    alpha = -(p'*g)/(p'*Q*p);
+    % form string
+    str = strcat("________B =",mat2str(round(B,3)));
+
+    % display string
+    disp(str)
+
+    % (iii) determine step using line search
+    if quadraticFlag % quadratic objective function exact line search
+        alpha = -(p'*g)/(p'*Q*p);
+    else % general case
+        alpha = fminbnd(@(alpha) F(x+alpha*p),0,100,...
+            optimset('TolX',1e-10,'TolFun',1e-10));
+    end
     disp_helper("alpha",alpha)
 
-    x_new = x + alpha*p;
+    x_new = x + alpha*p; % take the step
     disp_helper("x",x_new)
 
     % (iv) compute intermediate quantities
@@ -87,18 +119,19 @@ for iteration = 1:max_iterations
     B = B_new;
     g = g_new;
     x = x_new;
-
     disp(" ")
 
 end
 
-% compute error compared to the "exact" solution
-e_norm = norm(x - (Q\c),inf);
-disp_helper("max abs error",e_norm)
-
 % compute error compared to the exact hessian
-e_Q = norm(B-Q,inf);
+e_Q = norm(B-H(x),inf);
 disp_helper("error Q",e_Q)
+
+% compute error compared to the "exact" solution
+if quadraticFlag
+    e_norm = norm(x - (Q\c),inf);
+    disp_helper("max abs error",e_norm)
+end
 
 % function to make it easier to display things in the command window
 function disp_helper(name,number)
