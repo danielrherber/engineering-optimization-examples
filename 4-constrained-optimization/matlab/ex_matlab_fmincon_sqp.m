@@ -32,7 +32,7 @@ options = optimoptions('fmincon','Algorithm','sqp','Display','iter','OutputFcn',
 function [c, ceq] = consFunc(x_)
     global Q
     c = [];
-    ceq = x_'*Q*x_ - 1; % Equality constraint g(x_1,x_2) = x_1^2 + x_2^2  = 1 and x = [x_1, x_2]
+    ceq = x_'*Q*x_ - 1; % Equality constraint g(x_1,x_2) = x_1^2 + x_2^2  = 1 and x_ = [x_1, x_2]
 end
 
 function stop = outfun(x,optimValues,state)
