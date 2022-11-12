@@ -6,7 +6,7 @@ clear all; close all; clc
 
 %% create functions and derivatives
 % symbolic functions and derivatives
-syms x1 x2 l real
+syms x1 x2 real
 global history Q  % Global variables are declared to be used in the corresponding functions
 
 % Keeping the log of the optimValues from OutputFcn or optimoptions
