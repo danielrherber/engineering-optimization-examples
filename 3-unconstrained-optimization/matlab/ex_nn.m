@@ -15,7 +15,7 @@ X0 = rand(3*N,1);
 % fminunc optimizer options
 OPTIONS = optimoptions('fminunc');
 OPTIONS.Display = 'iter';
-OPTIONS.MaxFunctionEvaluations = 1e10; 
+OPTIONS.MaxFunctionEvaluations = 1e10;
 OPTIONS.MaxIterations = 1e10;
 OPTIONS.FiniteDifferenceType = 'central';
 
@@ -26,7 +26,7 @@ OPTIONS.FiniteDifferenceType = 'central';
 [w,a,b] = get_parameters(x,N);
 
 % get predictions
-y_pred = activation(x_data,w,a,b);  
+y_pred = activation(x_data,w,a,b);
 
 % plot
 figure; hold on
