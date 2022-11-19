@@ -2,14 +2,14 @@ close all; clear; clc
 
 % minimize the function from Session 7
 f = @(x) exp(0.5*x-1).*(x+1).^2;
-% f = @(x) (x+1).^2; % same result
+% f = @(x) (x+1).^2;
 
 % initial bracket
 a = -8;
 b = 1;
 
-% stopping tolerance (bracket size
-tolerance = 1e-8;
+% stopping tolerance (bracket size)
+tolerance = 1e-4;
 
 % maximum number of iterations
 max_iterations = 100;
@@ -33,54 +33,87 @@ for k = 1:max_iterations
     c = b - (b-a)/phi;
     d = a + (b-a)/phi;
 
-    % plot interior points
-    hc = plot(c,f(c),'r.','markersize',30);
-    hd = plot(d,f(d),'g.','markersize',30);
+    % compute interior function values
+    % (note that this is not done efficiently)
+    fc = f(c);
+    fd = f(d);
 
     % check which one contains the minimum
-    if f(c) < f(d)
-
-        % point to remove
-        q = b;
-
-        % update
-        b = d;
-
+    if fc < fd
+        r = b; % point to remove
+        b = d; % update
+        plot_helper_update(1,f,c,d,r) % update figure
     else
-
-        % point to remove
-        q = a;
-
-        % update
-        a = c;
-
+        r = a; % point to remove
+        a = c; % update
+        plot_helper_update(2,f,c,d,r) % update figure
     end
 
-    % update plot with removed point
-    plot(q,f(q),'.','markersize',30,'Color',[0.5 0.5 0.5]);
+    % display iteration information
+    disp_helper("--- iteration",k,[])
+    disp_helper("[a,b]",[a,b],[])
+    disp_helper("best f(x)",min(fc,fd),[])
 
-    % pause
-    pause
+    pause(1)
 
 end
-
-% midpoint is the optimal point
-x = (a+b)/2;
-disp(x)
-disp(k)
 
 %% helper functions
 function plot_helper(f,a,b)
 
-set(0,'DefaultTextInterpreter','latex'); % change the text interpreter
-set(0,'DefaultLegendInterpreter','latex'); % change the legend interpreter
-set(0,'DefaultAxesTickLabelInterpreter','latex'); % change the tick interpreter
+% colors
+niceblue = [77, 121, 167]/255;
+nicered = [225, 86, 86]/255;
+
+% create plot
 hf = figure; hf.Color = 'w'; hold on
 ha = gca; ha.LineWidth = 1; ha.FontSize = 18;
+xlabel('$x$','Interpreter','latex');
+ylabel('$f(x)$','Interpreter','latex');
+
+% plot function and points
 x = linspace(a,b,1e5);
 plot(x,f(x),'k-','LineWidth',2)
-xlabel('$x$'); ylabel('$f(x)$');
-plot(a,f(a),'b.','markersize',30)
-plot(b,f(b),'b.','markersize',30)
+plot(a,f(a),'b.','markersize',30,'color',nicered)
+plot(b,f(b),'b.','markersize',30,'color',niceblue)
+
+end
+
+function plot_helper_update(flag,f,c,d,r)
+
+% colors
+niceblue = [77, 121, 167]/255;
+nicered = [225, 86, 86]/255;
+nicegreen = [109, 195, 80]/255;
+nicegray = [110, 110, 110]/255;
+
+% plot new interval
+switch flag
+    case 1
+        plot(c,f(c),'.','markersize',30,'color',nicegreen);
+        plot(d,f(d),'.','markersize',30,'color',niceblue);
+    case 2
+        plot(c,f(c),'.','markersize',30,'color',nicered);
+        plot(d,f(d),'.','markersize',30,'color',nicegreen);
+end
+
+% gray out old point
+plot(r,f(r),'.','markersize',30,'Color',nicegray);
+
+end
+
+% function to make it easier to display things in the command window
+function disp_helper(name,number,n)
+
+% default value of the number of digits
+if isempty(n)
+    n = 5;
+end
+
+% form string
+str = strcat(string(name)," = ",mat2str(round(number,n)));
+
+% display string
+disp(str)
 
 end
