@@ -72,7 +72,6 @@ function [c,ceq] = constraints(x,stress_limit)
 % c = [stress - stress_limit; -stress - stress_limit]; % differentiable version
 c = [stress/stress_limit - 1; -stress/stress_limit - 1]; % scaled version
 
-
 % equality constraints
 ceq = []; % empty
 

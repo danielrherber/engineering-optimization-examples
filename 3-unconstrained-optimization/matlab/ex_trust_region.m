@@ -296,7 +296,7 @@ function output = plot_helper(flag,data)
     end
 
     % step direction and length
-    quiver(x0(1)-p0(1),x0(2)-p0(2),p0(1),p0(2),'off',...
+    quiver(x0(1)-p0(1),x0(2)-p0(2),p0(1),p0(2),0...
         'color',colors(k,:),'linewidth',1.5,'MaxHeadSize',0.6);
 
     % newton direction
