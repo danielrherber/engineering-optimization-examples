@@ -12,7 +12,7 @@ OPTIONS = optimoptions('linprog');
 OPTIONS.Display = 'iter';
 
 % solve the optimization problem
-X = linprog(-f,[a1;a2],[b1;b2],[],[],LB,[],[],OPTIONS);
+X = linprog(-f,[a1;a2],[b1;b2],[],[],LB,[],OPTIONS);
 
 % display the optimal solution
 names = ["bookshelves";"cabinets with doors";"tall cabinets with doors";"fancy cabinets"];

@@ -15,15 +15,12 @@ beq = [1 1 1 -1 -1 -1];
 LB = zeros(length(c),1);
 UB = ones(length(c),1);
 
-% initial point
-X0 = []; % not needed
-
 % options
 OPTIONS = optimoptions('linprog');
 OPTIONS.Display = 'iter';
 
 % solve using linprog
-[X,FVAL,EXITFLAG,OUTPUT] = linprog(-c,A,b,Aeq,beq,LB,UB,X0,OPTIONS)
+[X,FVAL,EXITFLAG,OUTPUT] = linprog(-c,A,b,Aeq,beq,LB,UB,OPTIONS)
 
 %% visualize the solution
 hf = figure; hf.Color = 'w'; hold on

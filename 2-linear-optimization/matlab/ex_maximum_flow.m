@@ -57,15 +57,12 @@ beq = zeros(N,1);
 LB = zeros(length(c),1); % zero lower bounds
 UB = [U;inf]; % nonzero upper bounds
 
-% initial point
-X0 = []; % not needed
-
 % options
 OPTIONS = optimoptions('linprog');
 OPTIONS.Display = 'iter';
 
 % solve using linprog
-[X,FVAL,EXITFLAG,OUTPUT] = linprog(-c,A,b,Aeq,beq,LB,UB,X0,OPTIONS)
+[X,FVAL,EXITFLAG,OUTPUT] = linprog(-c,A,b,Aeq,beq,LB,UB,OPTIONS)
 
 %% visualize the solution
 hf = figure; hf.Color = 'w'; hold on

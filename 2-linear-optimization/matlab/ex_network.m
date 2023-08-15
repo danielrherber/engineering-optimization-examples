@@ -17,15 +17,12 @@ beq = [50 0 0 0 0 -20 -30];
 LB = zeros(length(c),1);
 UB = 30*ones(length(c),1);
 
-% initial point
-X0 = []; % not needed
-
 % options
 OPTIONS = optimoptions('linprog');
 OPTIONS.Display = 'iter';
 
 % solve using linprog
-[X,FVAL,EXITFLAG,OUTPUT] = linprog(c,A,b,Aeq,beq,LB,UB,X0,OPTIONS)
+[X,FVAL,EXITFLAG,OUTPUT] = linprog(c,A,b,Aeq,beq,LB,UB,OPTIONS)
 
 %% visualize the solution
 hf = figure; hf.Color = 'w'; hold on

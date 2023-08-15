@@ -37,7 +37,7 @@ while ~isOptimal && ~isUnbounded
 end
 
 %% check with linprog
-X = linprog(c,[],[],A,b,zeros(length(x),1),[],[],[]);
+X = linprog(c,[],[],A,b,zeros(length(x),1),[]);
 disp("x with linprog = ")
 disp(X)
 
