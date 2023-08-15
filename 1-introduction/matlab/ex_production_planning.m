@@ -1,3 +1,8 @@
+% ex_production_planning.m
+% example of a linear program (LP) representing a production planning
+% optimization problem
+% [reference] Section 1.4 in LNO
+% [course] Session 1 - Introduction to Linear Optimization
 close all; clear; clc
 
 % problem definition

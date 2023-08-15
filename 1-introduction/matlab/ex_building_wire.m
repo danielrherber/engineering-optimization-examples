@@ -1,5 +1,11 @@
+% ex_building_wire.m
+% example of a nonlinear program (NLP) seeking the least amount of wire
+% between four buildings
+% [reference] Section 1.6 in LNO
+% [course] Session 1 - Introduction to Nonlinear Optimization
 close all; clear; clc
 
+% fmincon options
 OPTIONS = optimoptions('fmincon');
 OPTIONS.Display = 'Iter';
 % OPTIONS.FiniteDifferenceType = 'central';
@@ -11,20 +17,23 @@ OPTIONS.Display = 'Iter';
 % OPTIONS.Algorithm = "active-set";
 % OPTIONS.MaxFunctionEvaluations = 1e10;
 
+% initial optimization variable values
 % X0 = zeros(10,1);
 X0 = [4,2,1,4,9,5,3,-2,7,0];
 
-tic
+% solve the optimization problem
+tic % start timer
 [x,f] = fmincon(@wire_amount,X0,[],[],[],[],[],[],@building_constraints,OPTIONS);
-toc
+toc % stop timer
 
-% extract
+% extract optimal solution
 x0 = x(1); y0 = x(2);
 x1 = x(3); y1 = x(4);
 x2 = x(5); y2 = x(6);
 x3 = x(7); y3 = x(8);
 x4 = x(9); y4 = x(10);
 
+% initialize figure
 hf = figure; hf.Color = 'w'; hold on
 axis equal
 
@@ -40,17 +49,8 @@ plot([x2,x0],[y2,y0],'-')
 plot([x3,x0],[y3,y0],'-')
 plot([x4,x0],[y4,y0],'-')
 
-
-function h = circle2(x,y,r)
-d = r*2;
-px = x-r;
-py = y-r;
-h = rectangle('Position',[px py d d],'Curvature',[1,1],'FaceColor',[244, 244, 244]/255);
-daspect([1,1,1])
-end
-
-
-
+%--------------------------------------------------------------------------
+% calculate the amount of wire used (the objective function)
 function w = wire_amount(x)
 
 % extract
@@ -71,6 +71,8 @@ w = w1 + w2 + w3 + w4;
 
 end
 
+%--------------------------------------------------------------------------
+% calculate the building constraints
 function [c,ceq] = building_constraints(x)
 
 % extract
@@ -100,5 +102,17 @@ c(10) = y4 - 2;
 
 % no equality constraints
 ceq = []; % empty
+
+end
+
+%--------------------------------------------------------------------------
+% plotting function for a circle
+function h = circle2(x,y,r)
+
+d = r*2;
+px = x-r;
+py = y-r;
+h = rectangle('Position',[px py d d],'Curvature',[1,1],'FaceColor',[244, 244, 244]/255);
+daspect([1,1,1])
 
 end

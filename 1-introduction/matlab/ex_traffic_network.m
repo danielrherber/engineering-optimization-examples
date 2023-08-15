@@ -1,3 +1,8 @@
+% ex_traffic_network.m
+% example of a nonlinear program (NLP) seeking to minimize the total travel
+% time through the network for a volume of X cars per hour
+% [reference] Section 1.6 in LNO
+% [course] Session 1 - Introduction to Nonlinear Optimization
 close all; clear; clc
 
 % problem data
@@ -33,6 +38,7 @@ ep = 0.1;
 % visualize the solution
 plot_solution(x,f,p)
 
+%--------------------------------------------------------------------------
 % total travel time (objective) function
 function [f,g] = travel_time(x,p)
 
@@ -51,6 +57,7 @@ end
 
 end
 
+%--------------------------------------------------------------------------
 % plot the optimal solution
 function plot_solution(x,f,p)
 
