@@ -117,6 +117,7 @@ xlabel("x") % adds text label to x-axis
 ylabel("y") % adds text label to y-axis
 legend("a") % creates a legend
 text(1.4,3.8,"text") % places string in figure
+exportgraphics(gcf,"figname.png") % save plot or graphics content to file
 
 %% Decision Making and Loops
 % break % terminates the loop statement and transfers execution to the statement immediately following the loop
