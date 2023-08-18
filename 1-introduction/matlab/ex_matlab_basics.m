@@ -1,3 +1,8 @@
+% ex_matlab_basics.m
+% list of Matlab commands and syntax
+% [reference] https://www.tutorialspoint.com/matlab/matlab_commands.htm
+% https://www.mathworks.com/help/matlab/language-fundamentals.html
+% [course] All sessions
 %% Managing a Session
 close all % closes all figures
 clear % removes all variables from the current workspace
@@ -172,7 +177,3 @@ vpasolve(x^2 + 2*x == 1, x) % solve equations numerically
 function y = f(x,p)
     y = sin(x) + p;
 end
-
-%% More Information at can be Found at:
-% https://www.tutorialspoint.com/matlab/matlab_commands.htm
-% https://www.mathworks.com/help/matlab/language-fundamentals.html

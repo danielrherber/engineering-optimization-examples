@@ -1,31 +1,36 @@
+% ex_newton.m
+% illustration of Newton's method for solving f(x) = 0 for several 1-d and
+% 2-d examples
+% [reference] Section 2.7 in LNO
+% [course] Session 3 - Fundamental Concepts in Optimization (2)
 close all; clear; clc
 
 % select the example number (see cases below)
 example_number = 1;
 
 switch example_number
-    case 1 % One-dimensional Example
+    case 1 % one-dimensional example
         f = @(x) [7 3 2 9 4]*[x^4 x^3 x^2 x^1 x^0]';
         fd = @(x) [28 9 4 9]*[x^3 x^2 x^1 x^0]';
         X(1) = 0; % initial point
         n = 8; % number of iterations
         xmin = -1.25; % minimum x value for plotting
         xmax = 0.25; % maximum x value for plotting
-    case 2 % One-dimensional Example when f'(x*) = 0
+    case 2 % one-dimensional example when f'(x*) = 0
         f = @(x) [1 -7 17 -17 6]*[x^4 x^3 x^2 x^1 x^0]';
         fd = @(x) [4 -21 34 -17]*[x^3 x^2 x^1 x^0]';
         X(1) = 1.1; % initial point (try 1.1 and 2.1)
         n = 25; % number of iterations
         xmin = 0.5; % minimum x value for plotting
         xmax = 3; % maximum x value for plotting
-    case 3 % Failure of Newton's Method
+    case 3 % failure of Newton's method
         f = @(x) (exp(x) - exp(-x))/(exp(x) + exp(-x));
         fd = @(x) 4*exp(2*x)/(exp(2*x) + 1)^2;
         X(1) = 1.1; % initial point (try 1 and 1.1)
         n = 10; % number of iterations
         xmin = -6; % minimum x value for plotting
         xmax = 6; % maximum x value for plotting
-    case 4 % Multidimensional Case
+    case 4 % multidimensional case
         f = @(x) [3*x(1)*x(2) + 7*x(1) + 2*x(2) - 3;...
             5*x(1)*x(2) - 9*x(1) - 4*x(2) + 6];
         fd = @(x) [3*x(2) + 7, 3*x(1) + 2; 5*x(2) - 9, 5*x(1) - 4];
@@ -45,7 +50,7 @@ end
 % go through each iteration
 for k = 1:n
 
-    % 1d case (but not needed as newton_iteration also handled 1d case)
+    % 1-d case (but not needed as newton_iteration also handles 1-d case)
     % X(:,k+1) = newton_iteration_1d(X(:,k),f,fd);
 
     % compute Newton iteration
@@ -63,6 +68,7 @@ for k = 1:n
 
 end
 
+%--------------------------------------------------------------------------
 % 1-d Newton's method
 function xk1 = newton_iteration_1d(xk,f,fd)
 
@@ -71,7 +77,8 @@ xk1 = xk - f(xk)/fd(xk);
 
 end
 
-% n-d Newton's method
+%--------------------------------------------------------------------------
+% multidimensional Newton's method
 function xk1 = newton_iteration(xk,f,fd)
 
 % compute step size from linear system: A*p = -b
