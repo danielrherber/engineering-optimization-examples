@@ -1,10 +1,15 @@
+% ex_sqp.m
+% illustration of the sequential quadratic programming (SQP) method for a
+% a 2d problem with a single quadratic equality constraint
+% [reference] Section 15.5 in LNO
+% [course] Session 11 - Constrained Optimization (3)
 close all; clear; clc
 
-%% create functions and derivatives
-% symbolic functions and derivatives
+%--------------------------------------------------------------------------
+% symbolic functions (Example 15.8 in LNO)
 syms x1 x2 l real
 x =  [x1;x2];
-f = exp(3*x1) + exp(-4*x2);
+f = exp(3*x1) + exp(-4*x2); % you can change this function
 Q = eye(2); % you can change this matrix
 g = x'*Q*x - 1;
 
@@ -27,7 +32,8 @@ dG = matlabFunction(dg);
 dL = matlabFunction(dL);
 d2L = matlabFunction(d2L);
 
-%% setup
+%--------------------------------------------------------------------------
+% setup
 test = 1; % see below
 
 switch test
@@ -50,7 +56,8 @@ ConstraintTolerance = 1e-10; % constraint tolerance
 OptimalityTolerance = 1e-10; % optimality tolerance
 MaxIterations = 100; % maximum number of iterations
 
-%% Sequential Quadratic Programming Method
+%--------------------------------------------------------------------------
+%--- Sequential Quadratic Programming (SQP) method
 % problem information
 n = length(x); % number of variables
 m = length(l); % number of constraints
@@ -113,7 +120,7 @@ for k = 1:MaxIterations
 
 end
 
-%% helper functions
+%--------------------------------------------------------------------------
 % plot helper 1
 function plot_helper_1(F,Q)
 
@@ -135,6 +142,7 @@ ha.LineWidth = 1; ha.FontSize = 18;
 
 end
 
+%--------------------------------------------------------------------------
 % plot helper 2
 function hs = plot_helper_2(x,p,dL_,d2L_,g_,dG_,modelflag,hs)
 
@@ -214,6 +222,7 @@ end
 
 end
 
+%--------------------------------------------------------------------------
 % plot the quadratic function x'*Q*x = 1
 function plot_ellipse(Q_)
 
@@ -245,6 +254,7 @@ plot(x1_,x2_,'-','linewidth',2,'Color',[56, 142, 60]/255)
 
 end
 
+%--------------------------------------------------------------------------
 % function to make it easier to display things in the command window
 function disp_helper(name,number,varargin)
 

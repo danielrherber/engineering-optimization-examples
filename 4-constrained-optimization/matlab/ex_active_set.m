@@ -1,6 +1,12 @@
+% ex_active_set.m
+% illustration of an active-set method to solve a 2d quadratic program with
+% inequality constraints
+% [reference] Section 15.4 in LNO
+% [course] Session 11 - Constrained Optimization (3)
 close all; clear; clc
 
-% problem data: f(x) = 1/2*x'*Q*x + c'*x + d and Ax >= b
+% problem data from Example 15.7 in LNO
+% f(x) = 1/2*x'*Q*x + c'*x + d and Ax >= b
 Q = [1 0; 0 2];
 c = [-3; -4];
 d = 17/2;
@@ -137,7 +143,7 @@ end
 
 end
 
-%% helper functions
+%--------------------------------------------------------------------------
 % function to create the initial plot
 function plot_helper(Q,c,d,A,b)
 
@@ -168,6 +174,7 @@ hp.FaceAlpha = 0.15;
 
 end
 
+%--------------------------------------------------------------------------
 % function to make it easier to display things in the command window
 function disp_helper(name,number,n)
 

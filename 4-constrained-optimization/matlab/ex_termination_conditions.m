@@ -1,3 +1,7 @@
+% ex_termination_conditions.m
+% example of the termination conditions for the fmincon function
+% [reference] Section 12.6 in LNO
+% [course] Session 9 - Constrained Optimization (1)
 close all; clear; clc
 
 % fmincon options and tolerances
@@ -21,6 +25,7 @@ nonlcon = @circlecon;
 % solve the problem
 [x,FVAL,EXITFLAG,OUTPUT] = fmincon(fun,x0,A,b,Aeq,beq,lb,ub,nonlcon,OPTIONS)
 
+%--------------------------------------------------------------------------
 % nonlinear constraint definition
 function [c,ceq] = circlecon(x)
 ceq = 3*x(1)^2 + x(2)^2 - 1;

@@ -1,3 +1,8 @@
+% ex_truss.m
+% ten-bar truss constrained optimization problem
+% [reference] Section D.2.2 in EDO
+% [course] Session 12 - Constrained Optimization (4) and Derivative-free
+% Optimization (1)
 close all; clear; clc
 
 % problem data
@@ -47,8 +52,9 @@ G = graph(start,finish,weights);
 H = plot(G,'EdgeLabel',round(G.Edges.Weight,1),'LineWidth',G.Edges.Weight);
 H.XData = [2 2 1 1 0 0];
 H.YData = [1 0 1 0 1 0];
+axis off
 
-%% helper functions
+%--------------------------------------------------------------------------
 % objective function
 function f = objective(x,mass0)
 
@@ -61,6 +67,7 @@ f = mass/mass0; % scaled version
 
 end
 
+%--------------------------------------------------------------------------
 % nonlinear constraint function
 function [c,ceq] = constraints(x,stress_limit)
 
@@ -77,6 +84,7 @@ ceq = []; % empty
 
 end
 
+%--------------------------------------------------------------------------
 % function to make it easier to display things in the command window
 function disp_helper(name,number,n)
 

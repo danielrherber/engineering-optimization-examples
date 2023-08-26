@@ -1,6 +1,11 @@
+% ex_barrier.m
+% example of a barrier method for constrained optimization
+% [reference] Section 16.2.1 in LNO
+% [course] Session 12 - Constrained Optimization (4) and Derivative-free
+% Optimization (1)
 close all; clear; clc
 
-% problem functions
+% problem functions (Example 16.1 in LNO)
 f = @(x) x(1) - 2*x(2);
 g = @(x) [1 + x(1) - x(2)^2; x(2)];
 
@@ -24,22 +29,22 @@ OPTIONS.OptimalityTolerance = 0;
 OPTIONS.FunctionTolerance = 0;
 
 % go through each iteration
-for iter = 1:9
+for iter = 1:7
 
     % solve the unconstrained optimization problem
     x = fminunc(@(x) beta(x,mu),x,OPTIONS);
 
     % display stuff
     disp_helper("--- iteration",iter,[])
-    disp_helper("mu",mu,10)
-    disp_helper("x",x,10)
+    disp_helper("mu",mu,7)
+    disp_helper("x",x,7)
 
     % update mu
     mu = mu/10;
 
 end
 
-%% helper functions
+%--------------------------------------------------------------------------
 % function to make it easier to display things in the command window
 function disp_helper(name,number,n)
 
