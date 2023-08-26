@@ -1,3 +1,8 @@
+% ex_quasi_newton.m
+% examples of the update formulas used in quasi-Newton methods including
+% symmetric rank-one update and BFGS
+% [reference] Section 12.3 in LNO
+% [course] Session 8 - Unconstrained Optimization (2)
 close all; clear; clc
 
 test = 4;
@@ -6,7 +11,7 @@ updateformulaflag = 2; % 1: symmetric rank-one update, 2:BFGS
 
 switch test
     %----------------------------------------------------------------------
-    case 1 % Quadratic function Example 12.9 from LNO
+    case 1 % quadratic function Example 12.9 in LNO
         quadraticFlag = true; % is this a quadratic function?
         Q = diag([2,3,4]); % x'*Q*x/2
         c = [-8;-9;-8]; % c'*x
@@ -133,6 +138,7 @@ if quadraticFlag
     disp_helper("max abs error",e_norm)
 end
 
+%--------------------------------------------------------------------------
 % function to make it easier to display things in the command window
 function disp_helper(name,number)
 

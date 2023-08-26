@@ -1,28 +1,34 @@
+% ex_line_search_cubic.m
+% example of a line search using a cubic interpolant and Wolfe condition to
+% bracket step size alpha
+% [reference] Section 11.5 in LNO
+% [course] Session 7 - Unconstrained Optimization (1)
 close all; clear; clc
 
 test = 2;
 
 switch test
-    case 1 % Example 11.9 in Linear and Nonlinear Optimization
+    case 1 % Example 11.9 in LNO
         syms x alpha % initialize symbolic variables
         f(x) = 5 - x - log(4.5-x); % function of interest
         xk = 0; % current point
         pk = 1; % search direction (descent only)
         l = 2; r = 4; % current bracket [l,r] should contain a minimum
         F(alpha) = f(xk + alpha*pk); % line search function
+        alphamin = 7/2; % actual minimum
+        eta = 0.1; % Wolfe condition parameter
     case 2
         syms x1 x2 alpha % initialize symbolic variables
         x = [x1;x2];
-        f(x) = 100*(x2-x1^2)^2 + (x1-1)^2; % function of interest
+        f(x) = (x2-x1^2)^2 + (x1-1)^2/100; % function of interest
         xk = [-5;60]; % current point
         pk = [1;-10]; % search direction (descent only)
         l = 0; r = 8; % current bracket [l,r] should contain a minimum
         xk1 = xk + alpha*pk; % formula for the next point
         F(alpha) = f(xk1(1),xk1(2)); % line search function
+        alphamin = 5.9160857769635810631436; % actual minimum
+        eta = 100; % Wolfe condition parameter
 end
-
-% Wolfe condition parameter
-eta = 0.1;
 
 % calculate directional derivative
 dF = diff(F,alpha,1);
@@ -84,6 +90,8 @@ while findingAlpha
         F_r = F_(r); dF_r = dF_(r); % right endpoint
 
     end
+
+    % display current bracket
     disp(strcat("bracket now [",string(l)," ",string(r),"]"))
 
 end
@@ -94,8 +102,9 @@ disp(strcat("xk1 = ",mat2str(xk1)))
 disp(strcat("F(xk1) = ",mat2str(F_(alpha_hat))))
 
 % plot this point in the 2-d case
-if info.plotflag, plot_final(info,xk1), end
+if info.plotflag, plot_final(info,xk1,alphamin,F_), end
 
+%--------------------------------------------------------------------------
 % determine candidate step length using a specific cubic polynomial
 function alpha = cubic_alpha(l,r,Fl,Fr,Fpl,Fpr,info,iter)
 
@@ -113,6 +122,7 @@ if info.plotflag, myplot(l,r,a,b,c,d,alpha,info,iter), end
 
 end
 
+%--------------------------------------------------------------------------
 % plotting function for this example;
 function myplot(l,r,a,b,c,d,alpha_hat,info,iter)
 
@@ -122,7 +132,7 @@ nicegreen = [109, 195, 80]/255;
 nicegray = [110, 110, 110]/255;
 
 % vector of alpha values to plot
-A = linspace(l,r,1000);
+A = linspace(l,r,5000);
 
 % cubic polynomial function
 P3 = @(alpha) a*alpha.^3 + b*alpha.^2 + c*alpha.^1 + d*alpha.^0;
@@ -132,7 +142,7 @@ if info.n == 2
     % plot original function
     subplot(1,2,1); hold on
     ha = gca;
-    ha.LineWidth = 1; ha.FontSize = 16;
+    ha.LineWidth = 1; ha.FontSize = 18;
     ha.XColor = 'k'; ha.YColor = 'k';
     xlabel('$x_1$')
     ylabel('$x_2$')
@@ -157,7 +167,7 @@ end
 
 % plot line search function F
 ha = gca;
-ha.LineWidth = 1; ha.FontSize = 16;
+ha.LineWidth = 1; ha.FontSize = 18;
 ha.XColor = 'k'; ha.YColor = 'k';
 xlabel('$\alpha$')
 ylabel('$F(\alpha)$')
@@ -176,6 +186,7 @@ plot(alpha_hat,P3(alpha_hat),'.','Color',nicegreen,'MarkerSize',24)
 
 end
 
+%--------------------------------------------------------------------------
 % create the initial figure and change some settings
 function plot_initial
 
@@ -187,20 +198,36 @@ set(0,'DefaultAxesTickLabelInterpreter','latex'); % change the tick interpreter
 
 end
 
+%--------------------------------------------------------------------------
 % plot the final step taken
-function plot_final(info,x)
+function plot_final(info,x,alphamin,F)
 
-% only supports the 2d case for now
-if info.n == 2
+% colors
+nicered = [225, 86, 86]/255;
+niceblue = [77, 121, 167]/255;
 
-    % colors
-    nicered = [225, 86, 86]/255;
+if info.n == 2 % 2d case
 
     % select the correct subplot
     subplot(1,2,1); hold on
 
     % plot the point
-    plot(x(1),x(2),'.','MarkerSize',18,'Color',nicered)
+    plot(x(1),x(2),'.','MarkerSize',18,'Color',niceblue)
+
+    % plot the point
+    plot(info.xk(1)+alphamin*info.pk(1),info.xk(2)+alphamin*info.pk(2),...
+        '.','MarkerSize',18,'Color',nicered)
+
+    % select the correct subplot
+    subplot(1,2,2); hold on
+
+    % plot the known optimal alpha
+    plot(alphamin,F(alphamin),'.','MarkerSize',18,'Color',nicered)
+
+else % 1d case
+
+    % plot the known optimal alpha
+    plot(alphamin,F(alphamin),'.','MarkerSize',18,'Color',nicered)
 
 end
 

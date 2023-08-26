@@ -1,3 +1,7 @@
+% ex_nn.m
+% example of a simple artificial neural network (ANN) model with a single
+% input, single output
+% [course] Session 8 - Unconstrained Optimization (2)
 close all; clear; clc;
 
 % data
@@ -29,10 +33,14 @@ OPTIONS.FiniteDifferenceType = 'central';
 y_pred = activation(x_data,w,a,b);
 
 % plot
-figure; hold on
-plot(x_data,y_data,'.')
-plot(x_data,y_pred)
+set(0,'defaultTextInterpreter','latex');
+hf = figure; hf.Color = 'w'; hold on
+plot(x_data,y_data,'.k','markersize',12)
+plot(x_data,y_pred,'r','linewidth',2)
+ha = gca; ha.FontSize = 18;
+xlabel('$x$'); ylabel('$f(x)$'); % label axes
 
+%--------------------------------------------------------------------------
 % objective function
 function f = objective(x,x_data,y_data,N)
 
@@ -47,17 +55,19 @@ f = sum((y_pred - y_data).^2)/length(y_pred);
 
 end
 
+%--------------------------------------------------------------------------
 % get activation function parameters from optimization variables
 function [w,a,b] = get_parameters(x,N)
-    x = x(:); % ensure column vector
-    w = x(1:N); % weights
-    a = x(N+1:2*N); % amplitude
-    b = x(2*N+1:end); % bias
+x = x(:); % ensure column vector
+w = x(1:N); % weights
+a = x(N+1:2*N); % amplitude
+b = x(2*N+1:end); % bias
 end
 
+%--------------------------------------------------------------------------
 % sum activation functions to compute prediction for y given x_data
 function y_pred = activation(x_data,w,a,b)
-    y_pred = sum(w.*1./(1+exp(a.*x_data+b)));
-%     y_pred = sum(w.*(atan(a.*x_data+b)/pi + 0.5));
-%     y_pred = sum(w.*0.5.*(tanh(a.*x_data+b)+1));
+y_pred = sum(w.*1./(1+exp(a.*x_data+b)));
+% y_pred = sum(w.*(atan(a.*x_data+b)/pi + 0.5));
+% y_pred = sum(w.*0.5.*(tanh(a.*x_data+b)+1));
 end

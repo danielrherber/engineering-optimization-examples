@@ -1,13 +1,19 @@
+% ex_steepest_descent.m
+% examples of the steepest-descent method on quadratic functions
+% [reference] Section 12.2 in LNO
+% [course] Session 8 - Unconstrained Optimization (2)
 close all; clear; clc
 
 test = 2;
 
 switch test
-    case 1 % example from the book
+    %----------------------------------------------------------------------
+    case 1 % Example 12.1 in LNO
         Q = diag([1 5 25]);
         c = [-1;-1;-1];
         x0 = [0;0;0];
         n = 217;
+    %----------------------------------------------------------------------
     case 2 % cond(Q) is large
         d = [1 25];
         s = 3535;
@@ -15,6 +21,7 @@ switch test
         c = [-1;-1];
         x0 = [0;0];
         n = 20;
+    %----------------------------------------------------------------------
     case 3 % cond(Q) is smallish
         d = [1 2];
         s = 3243;
@@ -22,6 +29,7 @@ switch test
         c = [-1;-1];
         x0 = [0;0];
         n = 20;
+    %----------------------------------------------------------------------
     case 4 % cond(Q) = 1
         Q = diag([5 5]);
         c = [-1;-1];
@@ -41,12 +49,12 @@ end
 
 % setup figure
 if n2flag
+    set(0,'defaultTextInterpreter','latex');
     hf = figure; hf.Color = 'w'; hold on
-    xlabel('x')
-    ylabel('y')
+    xlabel('$x$'); ylabel('$y$'); % label axes
     axis equal
     ha = gca;
-    ha.FontSize = 20;
+    ha.FontSize = 18;
 end
 
 % assign initial point
@@ -84,11 +92,11 @@ for k = 1:n
 
         % plot line between old and new point
         hp = plot([xold(1) x(1)],[xold(2) x(2)],'-b');
-        hp.LineWidth = 1;
+        hp.LineWidth = 2;
 
         % plot current point
         hp = plot(xold(1),xold(2),'.r');
-        hp.MarkerSize = 12;
+        hp.MarkerSize = 18;
 
     end
 
@@ -118,19 +126,18 @@ if n2flag
 
     % create contour plot
     [~,hc] = contour(X,Y,C,f);
-
-    % labels
-    xlabel('x'); ylabel('y');
+    hc.LineWidth = 1;
 
     % plot optimal point
     hp = plot(x_opt(1),x_opt(2),'.g');
-    hp.MarkerSize = 12;
+    hp.MarkerSize = 18;
 
     % axis equal to visualize condition number
     axis equal
 
 end
 
+%--------------------------------------------------------------------------
 % create a random positive-definite matrix with given eigenvalues
 function A = create_rand_pd_matrix(d,s)
 
