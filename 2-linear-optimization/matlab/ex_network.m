@@ -29,7 +29,8 @@ OPTIONS.Display = 'iter';
 % solve using linprog
 [X,FVAL,EXITFLAG,OUTPUT] = linprog(c,A,b,Aeq,beq,LB,UB,OPTIONS)
 
-%% visualize the solution
+%--------------------------------------------------------------------------
+% visualize the solution
 hf = figure; hf.Color = 'w'; hold on
 
 % colors
@@ -57,6 +58,8 @@ hp = plot(G,'LineWidth',LWidths,'EdgeColor',EdgeColor,...
 
 % set node color
 hp.NodeColor = nicered;
+hp.NodeFontSize = 10;
+hp.EdgeFontSize = 10;
 
 % manually position nodes consistent with book picture
 XData = hp.XData;

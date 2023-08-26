@@ -5,7 +5,8 @@
 % [course] Session 4 - Linear Optimization (1)
 close all; clear; clc
 
-%% Example of the Basis Matrix for the Null Space
+%--------------------------------------------------------------------------
+% Example of the Basis Matrix for the Null Space
 % data
 A = [1 -1 0 0; 0 0 1 1];
 b = [2; 2];
@@ -28,7 +29,8 @@ xnew = xbar + Z*v
 % check that it is still feasible
 A*xnew - b
 
-%% Relationship between Null and Range Space
+%--------------------------------------------------------------------------
+% Relationship between Null and Range Space
 % solve a linear system for null-space and range-space component of xbar
 pq = [Z,A']\xbar;
 

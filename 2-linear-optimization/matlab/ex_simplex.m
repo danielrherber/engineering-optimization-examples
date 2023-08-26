@@ -43,16 +43,18 @@ while ~isOptimal && ~isUnbounded
 
 end
 
-%% check with linprog
+%--------------------------------------------------------------------------
+% check with linprog
 X = linprog(c,[],[],A,b,zeros(length(x),1),[]);
 disp("x with linprog = ")
 disp(X)
 
+%--------------------------------------------------------------------------
 % simplex iteration
 % NOTE: this assumes that you start at a basic feasible solution
 function [x,isOptimal,isUnbounded] = simplex_iteration(A,b,c,x)
 
-%% initial stuff
+%--- initial stuff
 % display current value of x (optional)
 disp("x = ")
 disp(x)
@@ -77,7 +79,7 @@ Ib(In) = [];
 N = A(:,In);
 B = A; B(:,In) = [];
 
-%% optimality test
+%--- optimality test
 % extract cN and cB
 cN = c(In);
 cB = c; cB(In) = [];
@@ -99,7 +101,7 @@ end
 [~,It_] = min(chat);
 It = In(It_); % get actual variable index
 
-%% step
+%--- step
 % compute constraint coefficients corresponding to the entering variable
 At = B\A(:,It);
 bt = B\b;
@@ -120,7 +122,7 @@ end
 % find smallest positive number for value of the entering variable
 xt = min(Alpha);
 
-%% update
+%--- update
 % compute null space matrix (using canonical ordering)
 Z = [eye(nn);-B\N];
 

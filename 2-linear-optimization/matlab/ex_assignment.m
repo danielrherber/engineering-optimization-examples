@@ -27,7 +27,8 @@ OPTIONS.Display = 'iter';
 % solve using linprog
 [X,FVAL,EXITFLAG,OUTPUT] = linprog(-c,A,b,Aeq,beq,LB,UB,OPTIONS)
 
-%% visualize the solution
+%--------------------------------------------------------------------------
+% visualize the solution
 hf = figure; hf.Color = 'w'; hold on
 
 % colors
@@ -56,25 +57,26 @@ hp = plot(G,'LineWidth',LWidths,'Layout','layered',...
 
 % set node color
 hp.NodeColor = nicered;
+hp.NodeFontSize = 12;
 
 % manually position nodes consistent with book picture
-XData = hp.XData;
-XData(1) = 18.709;
-XData(2) = 18.709;
-XData(3) = 18.709;
-XData(4) = 87.734;
-XData(5) = 87.734;
-XData(6) = 87.734;
-hp.XData = XData;
-
-YData = hp.YData;
-YData(1) = 46.260;
-YData(2) = 25.103;
-YData(3) = 3.948;
-YData(4) = 46.260;
-YData(5) = 25.103;
-YData(6) = 3.948;
-hp.YData = YData;
+% XData = hp.XData;
+% XData(1) = 18.709;
+% XData(2) = 18.709;
+% XData(3) = 18.709;
+% XData(4) = 87.734;
+% XData(5) = 87.734;
+% XData(6) = 87.734;
+% hp.XData = XData;
+% 
+% YData = hp.YData;
+% YData(1) = 46.260;
+% YData(2) = 25.103;
+% YData(3) = 3.948;
+% YData(4) = 46.260;
+% YData(5) = 25.103;
+% YData(6) = 3.948;
+% hp.YData = YData;
 
 axis off
 axis equal
