@@ -108,16 +108,16 @@ disp(strcat(string(k)," x:",string(vpa(x,16))," f(x):",string(vpa(f(x),16))))
 
 end
 
+%--------------------------------------------------------------------------
 function plot_start_1d(X,f,xmin,xmax)
 
+set(0,'defaultTextInterpreter','latex');
 hf = figure; hold on
 hf.Color = 'w';
-ha = gca;
+ha = gca; ha.FontSize = 18;
 xlim([xmin xmax])
 ha.LineWidth = 1;
-ha.FontSize = 14;
-xlabel('x')
-ylabel('f(x)')
+xlabel('$x$'); ylabel('$f(x)$'); % label axes
 
 Xg = linspace(xmin,xmax,1e6);
 for k = 1:length(Xg)
@@ -142,6 +142,7 @@ disp(strcat(string(k)," x1:",string(vpa(x(1),24)),...
 
 end
 
+%--------------------------------------------------------------------------
 function plot_start_2d(X,f,xmin,xmax)
 
 hf = figure; hold on

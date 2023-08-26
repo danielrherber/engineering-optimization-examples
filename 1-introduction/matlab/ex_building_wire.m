@@ -34,20 +34,24 @@ x3 = x(7); y3 = x(8);
 x4 = x(9); y4 = x(10);
 
 % initialize figure
+set(0,'defaultTextInterpreter','latex');
 hf = figure; hf.Color = 'w'; hold on
+ha = gca; ha.FontSize = 18;
+xlabel('$x$'); ylabel('$y$'); % label axes
+xlim([-2 11]); ylim([-4 6]);
 axis equal
 
 % plot buildings
 circle2(1,4,2) % building 1
 circle2(9,5,1) % building 2
-rectangle('Position',[2 -3 2 2],'FaceColor',[244, 244, 244]/255) % building 3
-rectangle('Position',[6 -2 2 4],'FaceColor',[244, 244, 244]/255) % building 4
+rectangle('Position',[2 -3 2 2],'FaceColor',[244, 244, 244]/255,'LineWidth',1) % building 3
+rectangle('Position',[6 -2 2 4],'FaceColor',[244, 244, 244]/255,'LineWidth',1) % building 4
 
 % plot wires
-plot([x1,x0],[y1,y0],'-')
-plot([x2,x0],[y2,y0],'-')
-plot([x3,x0],[y3,y0],'-')
-plot([x4,x0],[y4,y0],'-')
+plot([x1,x0],[y1,y0],'-','LineWidth',1)
+plot([x2,x0],[y2,y0],'-','LineWidth',1)
+plot([x3,x0],[y3,y0],'-','LineWidth',1)
+plot([x4,x0],[y4,y0],'-','LineWidth',1)
 
 %--------------------------------------------------------------------------
 % calculate the amount of wire used (the objective function)
@@ -112,7 +116,8 @@ function h = circle2(x,y,r)
 d = r*2;
 px = x-r;
 py = y-r;
-h = rectangle('Position',[px py d d],'Curvature',[1,1],'FaceColor',[244, 244, 244]/255);
+h = rectangle('Position',[px py d d],'Curvature',[1,1],...
+    'FaceColor',[244, 244, 244]/255,'LineWidth',1);
 daspect([1,1,1])
 
 end
