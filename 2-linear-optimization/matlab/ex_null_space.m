@@ -1,3 +1,8 @@
+% ex_null_space.m
+% example of the null-space matrix and moving in feasible directions for a
+% linear constraints Ax = b
+% [reference] Section 3.2 in LNO
+% [course] Session 4 - Linear Optimization (1)
 close all; clear; clc
 
 %% Example of the Basis Matrix for the Null Space

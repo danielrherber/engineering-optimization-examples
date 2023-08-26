@@ -1,3 +1,8 @@
+% ex_assignment.m
+% example of an assignment network problem where a company is planning to
+% assign three people to three jobs
+% [reference] Example 8.4 in LNO
+% [course] Session 6 - Linear Optimization (3)
 close all; clear; clc
 
 % problem data

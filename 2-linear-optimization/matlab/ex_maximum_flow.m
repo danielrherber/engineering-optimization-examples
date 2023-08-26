@@ -1,3 +1,9 @@
+% ex_maximum_flow.m
+% example of a maximum flow network problem which determines the number of
+% people that can be transported, as well as the routings that achieve this
+% result
+% [reference] Example 8.6 in LNO
+% [course] Session 6 - Linear Optimization (3)
 close all; clear; clc
 
 % node names

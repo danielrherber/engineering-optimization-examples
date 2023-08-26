@@ -1,20 +1,27 @@
+% ex_simplex.m
+% naive simplex method implementation for nondegenerate linear problems
+% that start with a basic feasible solution
+% [reference] Section 5.2 in LNO
+% [course] Session 5 - Linear Optimization (2)
+% [reference] Section 5.4 in LNO
+% [course] Session 6 - Linear Optimization (3)
 close all; clear; clc
 
 % test number (see below)
-test = 2;
+test = 1;
 
 switch test
-    case 1 % Session 5 Class Example
+    case 1 % session 5 class example, Section 5.2 in LNO
         A = [-2 1 1 0 0; -1 2 0 1 0; 1 0 0 0 1];
         b = [2; 7; 3];
         c = [-1; -2; 0; 0; 0];
         x = [0; 0; 2; 7; 3];
-    case 2 % Example for the Two-phase Method Continued (Phase 1) [Griva, LNO, p.149]
+    case 2 % two-phase method continued (phase 1), Section 5.4 in LNO
         A = [3 2 0 0 1 0; 2 -4 -1 0 0 1; 4 3 0 1 0 0];
         b = [14 2 19]';
         c = [0 0 0 0 1 1]';
         x = [0 0 0 19 14 2]';
-    case 3 % Example for the Two-phase Method Continued (Phase 2) [Griva, LNO, p.149]
+    case 3 % two-phase method continued (phase 2), Section 5.4 in LNO
         A = [3 2 0 0; 2 -4 -1 0; 4 3 0 1];
         b = [14 2 19]';
         c = [2 3 0 0]';

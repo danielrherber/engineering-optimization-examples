@@ -1,3 +1,8 @@
+% ex_network.m
+% example of a network linear program which determines the minimum cost and
+% paths of moving resources from the sources to sinks in a network
+% [reference] Example 8.1 in LNO
+% [course] Session 6 - Linear Optimization (3)
 close all; clear; clc
 
 % problem data
