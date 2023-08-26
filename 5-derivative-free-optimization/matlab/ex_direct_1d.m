@@ -1,3 +1,7 @@
+% ex_direct_1d.m
+% illustration of the dividing rectangles (DIRECT) algorithm in 1d
+% [reference] Section 7.5 in EDO
+% [course] Session 13 - Derivative-free Optimization (2)
 close all; clear; clc
 
 test = 1;
@@ -145,6 +149,7 @@ abs(F-F_)
 abs(Xeq-X_)
 abs(Feq-F_)
 
+%--------------------------------------------------------------------------
 % update point for the new segment boundaries
 function pt = updatePoint(a,b,f,DivisionLevel)
 
@@ -170,6 +175,7 @@ pt.DivisionLevel = DivisionLevel + 1;
 
 end
 
+%--------------------------------------------------------------------------
 % determine the potentially optimal segments
 function [K,Ltest] = potentiallyoptimal(D,F,DLevel,epsilon)
 
@@ -210,7 +216,7 @@ K = find(IsPotOpt);
 
 end
 
-%% helper functions
+%--------------------------------------------------------------------------
 % plot helper (to separate the plotting code from the algorithm)
 function output = plot_helper(plotflag,flag,YLimits,in1,in2,in3)
 
@@ -241,7 +247,7 @@ switch flag
         % initialize subplot 2
         subplot(1,2,2); hold on
         ha = gca; ha.LineWidth = 1; ha.XColor = 'k'; ha.YColor = 'k';
-        ha.FontSize = 12; ha.XScale = 'log';
+        ha.FontSize = 16; ha.XScale = 'log';
         xlabel('$d$','interpreter','latex')
         ylabel('$f$','interpreter','latex')
         ylim(YLimits)
@@ -250,7 +256,7 @@ switch flag
         % initialize subplot 1
         subplot(1,2,1); hold on
         ha = gca; ha.LineWidth = 1; ha.XColor = 'k'; ha.YColor = 'k';
-        ha.FontSize = 12;
+        ha.FontSize = 16;
         xlabel('$x$','interpreter','latex')
         ylabel('$f$','interpreter','latex')
         ylim(YLimits)
@@ -308,6 +314,7 @@ end
 
 end
 
+%--------------------------------------------------------------------------
 % find best function value using equidistant sampling
 function [F,X] = bestEquidistant(fun,a,b,N)
 
@@ -322,6 +329,7 @@ X = X(I);
 
 end
 
+%--------------------------------------------------------------------------
 % try to find a minimizer in the optimal segment
 % [X_,F_] = refineMinimizer(fun,pt(I)) % where I is the best segment index
 function [X,F] = refineMinimizer(fun,pt)

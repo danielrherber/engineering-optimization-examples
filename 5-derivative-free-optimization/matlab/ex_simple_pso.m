@@ -1,6 +1,10 @@
+% ex_simple_pso.m
+% illustration of particle swarm optimization (PSO) on 2d problems
+% [reference] Section 7.7 in EDO
+% [course] Session 13 - Derivative-free Optimization (2)
 close all; clear; clc
 
-test = 3; % see cases below
+test = 2; % see cases below
 
 switch test
     case 1
@@ -170,7 +174,7 @@ legend('Best','Mean')
 xlabel('Iteration Number'); ylabel('$f$'); % axis labels
 figure(1); % bring the first figure to the front
 
-%% helper functions
+%--------------------------------------------------------------------------
 % function to make it easier to display things in the command window
 function disp_helper(name,number,n)
 
@@ -187,6 +191,7 @@ disp(str)
 
 end
 
+%--------------------------------------------------------------------------
 % display and calculate things related to this iteration (generation)
 function [X_best,F_best,F_mean] = disp_iteration(f,x,X_best,F_best,F_mean,k)
 
@@ -205,6 +210,7 @@ disp_helper("min(f)",f_best,[])
 
 end
 
+%--------------------------------------------------------------------------
 % create initial plot
 function [hp,parent_color,colors] = plot_helper1(obj,pen,con,lb,ub,x,p,max_iterations)
 
@@ -242,6 +248,7 @@ colors = autumn(max_iterations);
 
 end
 
+%--------------------------------------------------------------------------
 % plot new population
 function hp = plot_helper2(hp,parent_color,x,p,colors,X_optimal,k,con,lb,ub)
 
@@ -275,6 +282,7 @@ box on
 
 end
 
+%--------------------------------------------------------------------------
 % constraint function for fmincon
 function [c,ceq] = mycon(x,con)
 
@@ -283,6 +291,7 @@ ceq = con(x(1),x(2));
 
 end
 
+%--------------------------------------------------------------------------
 % potentially limit norm of the step
 function p = step_norm_limiter(p,p_norm_max)
 

@@ -1,3 +1,8 @@
+% ex_golden_section.m
+% illustration of golden-section search bracketing for minimizing a 1d
+% function
+% [course] Session 12 - Constrained Optimization (4) and Derivative-free
+% Optimization (1)
 close all; clear; clc
 
 % minimize the function from Session 7
@@ -58,7 +63,7 @@ for k = 1:max_iterations
 
 end
 
-%% helper functions
+%--------------------------------------------------------------------------
 function plot_helper(f,a,b)
 
 % colors
@@ -79,6 +84,7 @@ plot(b,f(b),'b.','markersize',30,'color',niceblue)
 
 end
 
+%--------------------------------------------------------------------------
 function plot_helper_update(flag,f,c,d,r)
 
 % colors
@@ -102,6 +108,7 @@ plot(r,f(r),'.','markersize',30,'Color',nicegray);
 
 end
 
+%--------------------------------------------------------------------------
 % function to make it easier to display things in the command window
 function disp_helper(name,number,n)
 

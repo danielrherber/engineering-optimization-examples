@@ -1,3 +1,8 @@
+% ex_simple_ga.m
+% illustration of a genetic algorithm (GA) on 2d problems using roulette
+% wheel selection, linear crossover, and uniform random mutation
+% [reference] Section 7.6 in EDO
+% [course] Session 13 - Derivative-free Optimization (2)
 close all; clear; clc
 
 test = 2; % see cases below
@@ -144,7 +149,7 @@ legend('Best','Mean')
 xlabel('Iteration Number'); ylabel('$f$'); % axis labels
 figure(1); % bring the first figure to the front
 
-%% helper functions
+%--------------------------------------------------------------------------
 % implementation of roulette wheel selection
 function parent_indices = roulette_wheel_selection(f)
 
@@ -179,6 +184,7 @@ end
 
 end
 
+%--------------------------------------------------------------------------
 % implementation of linear crossover on 2 variables
 function children = linear_crossover(f,x,parent_indices,alpha)
 
@@ -216,6 +222,7 @@ end
 
 end
 
+%--------------------------------------------------------------------------
 % implementation of uniform random mutation on 2 variables
 function children = uniform_random_mutation(children,p,Delta)
 
@@ -233,6 +240,7 @@ children = children + (pr <= p).*(rr-0.5)*Delta;
 
 end
 
+%--------------------------------------------------------------------------
 % function to make it easier to display things in the command window
 function disp_helper(name,number,n)
 
@@ -249,6 +257,7 @@ disp(str)
 
 end
 
+%--------------------------------------------------------------------------
 % display and calculate things related to this iteration (generation)
 function [X_best,F_best,F_mean] = disp_iteration(f,x,X_best,F_best,F_mean,k)
 
@@ -267,6 +276,7 @@ disp_helper("min(f)",f_best,[])
 
 end
 
+%--------------------------------------------------------------------------
 % create initial plot
 function [hp,parent_color,colors] = plot_helper1(obj,pen,con,lb,ub,x,max_iterations)
 
@@ -303,6 +313,7 @@ colors = autumn(max_iterations);
 
 end
 
+%--------------------------------------------------------------------------
 % plot new population
 function hp = plot_helper2(hp,parent_color,children,colors,X_optimal,k,con,lb,ub)
 
@@ -330,6 +341,7 @@ box on
 
 end
 
+%--------------------------------------------------------------------------
 % constraint function for fmincon
 function [c,ceq] = mycon(x,con)
 
