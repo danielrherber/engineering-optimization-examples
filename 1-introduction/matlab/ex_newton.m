@@ -35,7 +35,7 @@ switch example_number
             5*x(1)*x(2) - 9*x(1) - 4*x(2) + 6];
         fd = @(x) [3*x(2) + 7, 3*x(1) + 2; 5*x(2) - 9, 5*x(1) - 4];
         X(:,1) = [1;2]; % initial point
-        n = 10; % number of iterations
+        n = 5; % number of iterations
         xmin = -6; % minimum x value for plotting
         xmax = 6; % maximum x value for plotting
 end
@@ -134,7 +134,7 @@ end
 function plot_2d(x,f,k)
 
 % plot current point
-plot3(x(1),x(2),norm(f(x)),'r.','markersize',24)
+plot3(x(1),x(2),log(norm(f(x))),'r.','markersize',24)
 
 % display stuff
 disp(strcat(string(k)," x1:",string(vpa(x(1),24)),...
@@ -145,23 +145,26 @@ end
 %--------------------------------------------------------------------------
 function plot_start_2d(X,f,xmin,xmax)
 
+set(0,'defaultTextInterpreter','latex');
 hf = figure; hold on
 hf.Color = 'w';
 ha = gca;
 ha.LineWidth = 1;
 ha.FontSize = 14;
-xlabel('x_1')
-ylabel('x_2')
+xlabel('$x_1$')
+ylabel('$x_2$')
 zlabel('log(norm(f(x)))')
 
-x = linspace(xmin,xmax,300);
+x = linspace(xmin,xmax,500);
 [X1,X2] = meshgrid(x,x);
 E = nan(size(X1));
 for k = 1:numel(X1)
     E(k) = norm(f([X1(k),X2(k)]));
 end
 
-contourf(X1,X2,log(E),40) % plot errors
-plot(X(1),X(2),'g.','markersize',24) % initial point
+% contourf(X1,X2,log(E),40) % plot errors with contourf
+hf = surf(X1,X2,log(E)); % plot errors with surf
+hf.LineStyle = 'none'; hf.FaceAlpha = 0.75; % style surf
+plot3(X(1),X(2),log(norm(f(X))),'g.','markersize',24) % initial point
 
 end
