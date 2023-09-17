@@ -77,17 +77,12 @@ In(Ib) = [];
 N = A(:,In);
 B = A(:,Ib);
 
-% determine current basic feasible solution (using canonical ordering)
-xN = zeros(nn,1);
-xB = B\b;
-x = [xN;xB];
-
-% restore x back to original ordering
-x([In,Ib],:) = x;
+% find xk given new basis
+x = find_x_given_basis(B,b,Ib,n);
 
 % display current value of x and basis (optional)
-disp(strcat("x = ",mat2str(x)))
-disp(strcat("basis = ",mat2str(Ib)))
+disp(strcat("x = ",mat2str(x,4)))
+disp(strcat("basis = ",mat2str(Ib,4)))
 
 %--- (i) check optimality of xk
 % extract cN and cB vectors
@@ -135,19 +130,28 @@ end
 [xe,Il_] = min(Alphas);
 Il = Ib(Il_);
 
-% compute null space matrix (using canonical ordering)
-Z = [eye(nn);-B\N];
-
-% restore Z back to original ordering
-Z([In,Ib],:) = Z;
-
-% step using correct column of Z
-x = x + xe*Z(:,Ie_);
-
 % remove leaving variable from basis
 Ib(Ib==Il) = [];
 
 % add entering variable to basis
 Ib = [Ib,Ie];
+
+% find xk+1 given new basis
+x = find_x_given_basis(A(:,Ib),b,Ib,n);
+
+end
+
+%--------------------------------------------------------------------------
+% find x given basis
+function x = find_x_given_basis(B,b,Ib,n)
+
+% initialize as all zeros
+x = zeros(n,1);
+
+% determine basic variables
+xB = B\b;
+
+% assign basic variable values with original ordering
+x(Ib) = xB;
 
 end
