@@ -9,6 +9,7 @@ close all; clear; clc
 % f(x) = 1/2*x'*Q*x + c'*x + d and Ax >= b
 Q = [1 0; 0 2];
 c = [-3; -4];
+% c = [-2; -1] % <- try this too
 d = 17/2;
 A = [2 -1; -1 -1; 0 1];
 b = [0; -4; 0];
@@ -76,70 +77,70 @@ for iter = 1:MaxIterations
 
     end
 
-% check if optimal
-if IsOptimal
-    break
-end
+    % check if optimal
+    if IsOptimal
+        break
+    end
 
-%--- The Search Direction
-% compute reduced Newton search direction
-p = -Zb*((Zb'*Q*Zb)\(Zb'*g));
+    %--- The Search Direction
+    % compute reduced Newton search direction
+    p = -Zb*((Zb'*Q*Zb)\(Zb'*g));
 
-%--- The Step
-% initialize maximum step as the newton step
-alpha = 1;
+    %--- The Step
+    % initialize maximum step as the newton step
+    alpha = 1;
 
-% go through each constraint
-for k = 1:m
+    % go through each constraint
+    for k = 1:m
 
-    % only if the constraint is not in the working set
-    if ~any(k == Iw)
+        % only if the constraint is not in the working set
+        if ~any(k == Iw)
 
-        % extract current constraint row
-        a = A(k,:);
+            % extract current constraint row
+            a = A(k,:);
 
-        % check if this is a descent direction
-        if a*p < 0
+            % check if this is a descent direction
+            if a*p < 0
 
-            % compute maximum step length with ratio test
-            alpha_ = -(a*x - b(k))/(a*p);
+                % compute maximum step length with ratio test
+                alpha_ = -(a*x - b(k))/(a*p);
 
-            % update maximum step length
-            alpha = min(alpha_,alpha);
+                % update maximum step length
+                alpha = min(alpha_,alpha);
+
+            end
 
         end
 
     end
 
-end
+    %--- The Update
+    % take step
+    x = x + alpha*p;
 
-%--- The Update
-% take step
-x = x + alpha*p;
+    % update working set (this add all approximately active constraints)
+    Iw = find(abs(A*x - b) <= ConstraintTolerance);
 
-% update working set (this add all approximately active constraints)
-Iw = find(abs(A*x - b) <= ConstraintTolerance);
+    % update working set
+    Ab = A(Iw,:); % constraint matrix
+    Zb = null(Ab,'r'); % null space of the constraint matrix
+    Abr = pinv(Ab); % right inverse of the constraint matrix
 
-% update working set
-Ab = A(Iw,:); % constraint matrix
-Zb = null(Ab,'r'); % null space of the constraint matrix
-Abr = pinv(Ab); % right inverse of the constraint matrix
+    % display stuff
+    disp_helper("---Iteration",iter,[])
+    disp_helper("x",x,[])
+    disp_helper("Iw",Iw,[])
+    disp_helper("Zb",Zb,[])
+    plot(x(1),x(2),'.r','markersize',24)
+    text(x(1)-0.2,x(2),string(iter),'color','w','FontSize',14)
 
-% display stuff
-disp_helper("---Iteration",iter,[])
-disp_helper("x",x,[])
-disp_helper("Iw",Iw,[])
-disp_helper("Zb",Zb,[])
-plot(x(1),x(2),'.r','markersize',24)
-text(x(1)-0.2,x(2),string(iter),'color','w','FontSize',14)
-
-% compute Lagrange multipliers
-g = Q*x + c; Lb = Abr'*g; E = Ab'*Lb - g;
-disp_helper("Lb",Lb,[])
-disp_helper("Lb Error",E,[])
-if norm(E) > 1e-8
-    text(x(1)+0.15,x(2),'inconsistent multipliers','color','w','FontSize',14)
-end
+    % compute Lagrange multipliers
+    g = Q*x + c; Lb = Abr'*g; E = Ab'*Lb - g;
+    disp_helper("Lb",Lb,[])
+    disp_helper("Lb Error",E,[])
+    if norm(E) > 1e-8
+        text(x(1)+0.15,x(2),'inconsistent multipliers','color','w','FontSize',14)
+    end
 
 end
 
