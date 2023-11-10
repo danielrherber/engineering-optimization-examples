@@ -34,7 +34,7 @@ d2L = matlabFunction(d2L);
 
 %--------------------------------------------------------------------------
 % setup
-test = 1; % see below
+test = 4; % see below
 
 switch test
     case 1
@@ -46,6 +46,9 @@ switch test
     case 3
         % initial point
         x = [-1; 1]; l = 0;
+    case 4
+        % initial point
+        x = [-1/4; 15^(1/2)/4]; l = -0.25;
 end
 
 % plot quadratic model (in 3d)
