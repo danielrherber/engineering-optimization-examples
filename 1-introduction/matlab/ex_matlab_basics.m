@@ -103,8 +103,8 @@ strcmpi("A","a") % compare strings (case insensitive)
 
 %% Functions
 %--- function definition example
-% function y = f(x) % actual definition below
-%     y = sin(x);
+% function y = f(x,p) % actual definition below
+%     y = sin(x) + p;
 % end
 f(1,2) % function definition usage
 %--- anonymous function example
@@ -165,7 +165,7 @@ s = sin(x); % symbolic function
 diff(s,x,1) % differentiate symbolic expression or function
 int(s,x) % definite and indefinite integrals
 simplify(2*x + (x - 1)^2) % algebraic simplification
-pretty(s^2/(s+1)) % Prettyprint symbolic expressions
+pretty(s^2/(s+1)) % pretty print symbolic expressions
 subs(s,x,2) % symbolic substitution
 gradient(sin(x*y) + y^2,[x y]) % gradient vector of scalar function
 hessian(sin(x*y) + y^2,[x y]) % hessian matrix of scalar function
