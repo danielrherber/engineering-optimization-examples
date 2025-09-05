@@ -1,6 +1,6 @@
 % ex_newton.m
-% illustration of Newton's method for solving f(x) = 0 for several 1-d and
-% 2-d examples
+% illustration of Newton's method for solving f(x) = 0 for several 1D and
+% 2D examples
 % [reference] Section 2.7 in LNO
 % [course] Session 3 - Fundamental Concepts in Optimization (2)
 close all; clear; clc
@@ -42,15 +42,15 @@ end
 
 % create plot (see below for the functions)
 if isscalar(X(:,1))
-    plot_start_1d(X,f,xmin,xmax) % 1-d case
+    plot_1d(X(:,1),f,0,[],[],X,xmin,xmax,'init') % 1D case
 else
-    plot_start_2d(X,f,xmin,xmax) % 2-d case
+    plot_2d(X(:,1),f,0,X,xmin,xmax,'init') % 2D case
 end
 
 % go through each iteration
 for k = 1:n
 
-    % 1-d case (but not needed as newton_iteration also handles 1-d case)
+    % 1D case (but not needed as newton_iteration also handles 1D case)
     % X(:,k+1) = newton_iteration_1d(X(:,k),f,fd);
 
     % compute Newton iteration
@@ -61,15 +61,15 @@ for k = 1:n
 
     % plot iteration (see below for the functions)
     if isscalar(x_)
-        plot_1d(x_,f,k,X(:,k),fd) % 1-d case
+        plot_1d(x_,f,k,X(:,k),fd,[],[],[],'iter') % 1D case
     else
-        plot_2d(x_,f,k) % 2-d case
+        plot_2d(x_,f,k,[],[],[],'iter') % 2D case
     end
 
 end
 
 %--------------------------------------------------------------------------
-% 1-d Newton's method
+% 1D Newton's method
 function xk1 = newton_iteration_1d(xk,f,fd)
 
 % Newton iteration
@@ -92,16 +92,55 @@ xk1 = xk + p;
 end
 
 %--------------------------------------------------------------------------
-% plotting functions for 1d case
-function plot_1d(x,f,k,xold,fd)
+% plotting functions for 1D case
+% (not the main content)
+function plot_1d(x,f,k,xold,fd,X,xmin,xmax,tasknum)
 
-% plot tangent line
-X = linspace(xold,x,2);
-plot(X,f(xold) + fd(xold)*(X-xold),'m--','linewidth',1.5)
-plot([x x],[0 f(x)],'k--','linewidth',1.5)
+% colors and other parameters
+niceblue = [77, 121, 167]/255;
+nicered = [225, 86, 86]/255;
+nicegreen = [109, 195, 80]/255;
+LineWidth = 1.5;
+MarkerSize = 24;
+FontSize = 12;
+plotOpts = {'LineWidth',LineWidth,'MarkerSize',MarkerSize};
 
-% plot next point
-plot(x,f(x),'r.','markersize',24)
+switch tasknum
+    %----------------------------------------------------------------------
+    case 'init' % initial point
+
+    % initialize figure
+    hf = figure; hf.Color = 'w'; hold on
+
+    % function values
+    Xg = linspace(xmin,xmax,1e6);
+    for idx = 1:length(Xg)
+        Fg(idx) = f(Xg(idx));
+    end
+    plot([xmin xmax],[0 0],'-',plotOpts{:},'Color',niceblue) % desired value
+    plot(Xg,Fg,plotOpts{:},'Color','k') % function value
+    plot(X(:,1),f(X(:,1)),'.',plotOpts{:},'Color',nicegreen) % initial point
+
+    xlim([xmin xmax])
+
+    xlabel('$x$','Interpreter','latex');
+    ylabel('$f(x)$','Interpreter','latex');
+
+    ha = gca; ha.XColor = 'k'; ha.YColor = 'k'; ha.Color = 'none';
+    ha.LineWidth = 1; ha.FontSize = FontSize;
+
+    %----------------------------------------------------------------------
+    case 'iter' % plot current iteration
+
+    % plot tangent line
+    X = linspace(xold,x,2);
+    plot(X,f(xold) + fd(xold)*(X-xold),'--',plotOpts{:},'Color',nicered)
+    plot([x x],[0 f(x)],'--',plotOpts{:},'Color','k')
+
+    % plot next point
+    plot(x,f(x),'.',plotOpts{:},'Color',nicered)
+
+end
 
 % display stuff
 disp(strcat(string(k)," x:",string(vpa(x,16))," f(x):",string(vpa(f(x),16))))
@@ -109,62 +148,57 @@ disp(strcat(string(k)," x:",string(vpa(x,16))," f(x):",string(vpa(f(x),16))))
 end
 
 %--------------------------------------------------------------------------
-function plot_start_1d(X,f,xmin,xmax)
+% plotting functions for 2D case
+% (not the main content)
+function plot_2d(x,f,k,X,xmin,xmax,tasknum)
 
-set(0,'defaultTextInterpreter','latex');
-hf = figure; hold on
-hf.Color = 'w';
-ha = gca; ha.FontSize = 18;
-xlim([xmin xmax])
-ha.LineWidth = 1;
-xlabel('$x$'); ylabel('$f(x)$'); % label axes
+% colors and other parameters
+nicered = [225, 86, 86]/255;
+nicegreen = [109, 195, 80]/255;
+LineWidth = 1.5;
+MarkerSize = 24;
+FontSize = 12;
+plotOpts = {'LineWidth',LineWidth,'MarkerSize',MarkerSize};
 
-Xg = linspace(xmin,xmax,1e6);
-for k = 1:length(Xg)
-    Fg(k) = f(Xg(k));
+switch tasknum
+    %----------------------------------------------------------------------
+    case 'init' % initial point
+
+    % initialize figure
+    hf = figure; hf.Color = 'w'; hold on
+
+    % calculate norm of errors
+    x_ = linspace(xmin,xmax,800);
+    [X1,X2] = meshgrid(x_,x_);
+    E = nan(size(X1));
+    for idk = 1:numel(X1)
+        E(idk) = norm(f([X1(idk),X2(idk)]));
+    end
+
+    % contourf(X1,X2,log(E),40) % plot errors with contourf
+    hf = surf(X1,X2,log(E)); % plot errors with surf
+    hf.LineStyle = 'none'; hf.FaceAlpha = 0.75; % style surf
+    plot3(X(1),X(2),log(norm(f(X))),'.',plotOpts{:},'Color',nicegreen) % initial point
+
+    xlabel('$x_1$','Interpreter','latex');
+    ylabel('$x_2$','Interpreter','latex');
+    zlabel('$\log(\|f(x)\|)$','Interpreter','latex');
+
+    colorbar('Color','k','LineWidth',1);
+
+    ha = gca; ha.XColor = 'k'; ha.YColor = 'k'; ha.ZColor = 'k'; ha.Color = 'none';
+    ha.LineWidth = 1; ha.FontSize = FontSize;
+
+    %----------------------------------------------------------------------
+    case 'iter' % plot current iteration
+
+    % plot current point
+    plot3(x(1),x(2),log(norm(f(x))),'.',plotOpts{:},'Color',nicered)
+
 end
-plot([xmin xmax],[0 0],'b-','linewidth',1.5) % desired value
-plot(Xg,Fg,'k','linewidth',1.5) % function value
-plot(X(:,1),f(X(:,1)),'g.','markersize',24) % initial point
-
-end
-
-%--------------------------------------------------------------------------
-% plotting functions for 2d case
-function plot_2d(x,f,k)
-
-% plot current point
-plot3(x(1),x(2),log(norm(f(x))),'r.','markersize',24)
 
 % display stuff
 disp(strcat(string(k)," x1:",string(vpa(x(1),24)),...
     " x2:",string(vpa(x(2),16))," e:",string(vpa(norm(f(x)),16))))
-
-end
-
-%--------------------------------------------------------------------------
-function plot_start_2d(X,f,xmin,xmax)
-
-set(0,'defaultTextInterpreter','latex');
-hf = figure; hold on
-hf.Color = 'w';
-ha = gca;
-ha.LineWidth = 1;
-ha.FontSize = 14;
-xlabel('$x_1$')
-ylabel('$x_2$')
-zlabel('log(norm(f(x)))')
-
-x = linspace(xmin,xmax,500);
-[X1,X2] = meshgrid(x,x);
-E = nan(size(X1));
-for k = 1:numel(X1)
-    E(k) = norm(f([X1(k),X2(k)]));
-end
-
-% contourf(X1,X2,log(E),40) % plot errors with contourf
-hf = surf(X1,X2,log(E)); % plot errors with surf
-hf.LineStyle = 'none'; hf.FaceAlpha = 0.75; % style surf
-plot3(X(1),X(2),log(norm(f(X))),'g.','markersize',24) % initial point
 
 end
