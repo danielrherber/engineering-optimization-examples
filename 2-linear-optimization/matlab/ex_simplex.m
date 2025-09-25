@@ -41,10 +41,14 @@ end
 % initialize as not optimal and is not unbounded
 isOptimal = false; isUnbounded = false;
 
+% initialize iteration counter
+k = 0;
+
 % continue iterating until optimal point is found
 while ~isOptimal && ~isUnbounded
 
-    [x,basis,isOptimal,isUnbounded] = simplex_iteration(A,b,c,basis);
+    % perform one iteration of the simplex method
+    [x,basis,k,isOptimal,isUnbounded] = simplex_iteration(A,b,c,basis,k);
 
 end
 
@@ -57,7 +61,10 @@ disp(X)
 %--------------------------------------------------------------------------
 % simplex iteration
 % NOTE: this assumes that you start at a basic feasible solution
-function [x,Ib,isOptimal,isUnbounded] = simplex_iteration(A,b,c,Ib)
+function [x,Ib,k,isOptimal,isUnbounded] = simplex_iteration(A,b,c,Ib,k)
+
+% display iteration number
+disp(strcat("k = ",string(k)))
 
 %--- initial stuff
 % initial values
@@ -138,6 +145,9 @@ Ib = [Ib,Ie];
 
 % find xk+1 given new basis
 x = find_x_given_basis(A(:,Ib),b,Ib,n);
+
+% increment iteration counter
+k = k + 1;
 
 end
 
