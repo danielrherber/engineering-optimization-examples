@@ -122,8 +122,9 @@ be = B\b;
 % compute ratios
 Alphas = be./ae;
 
-% replace negative numbers with infinite step size (never selected)
-Alphas(Alphas<0) = inf;
+% replace nonpositive potential pivot entries with infinite step size
+% (so they are never selected as the leaving variable)
+Alphas(ae<=0) = inf;
 
 % check if the problem is unbounded
 if all(isinf(Alphas))
