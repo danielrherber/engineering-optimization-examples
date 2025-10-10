@@ -5,9 +5,9 @@
 % [course] Session 7 - Unconstrained Optimization (1)
 close all; clear; clc
 
-test = 2;
+example = 1;
 
-switch test
+switch example
     case 1 % Example 11.9 in LNO
         syms x alpha % initialize symbolic variables
         f(x) = 5 - x - log(4.5-x); % function of interest
@@ -101,7 +101,7 @@ xk1 = xk + alpha_hat*pk;
 disp(strcat("xk1 = ",mat2str(xk1)))
 disp(strcat("F(xk1) = ",mat2str(F_(alpha_hat))))
 
-% plot this point in the 2-d case
+% plot this point in the 2D case
 if info.plotflag, plot_final(info,xk1,alphamin,F_), end
 
 %--------------------------------------------------------------------------
@@ -117,19 +117,24 @@ d = Fl - l^3*a - l^2*b - l*c;
 % minimum value of the cubic in [l,r]
 alpha = (-b + sqrt(b^2 - 3*a*c))/(3*a);
 
-% create a visualization of the cubic (1d or 2d case)
+% create a visualization of the cubic (1D or 2D case)
 if info.plotflag, myplot(l,r,a,b,c,d,alpha,info,iter), end
 
 end
 
 %--------------------------------------------------------------------------
-% plotting function for this example;
+% plotting functions
+% (not the main content)
 function myplot(l,r,a,b,c,d,alpha_hat,info,iter)
 
-% colors
+% colors and other parameters
 niceblue = [77, 121, 167]/255;
 nicegreen = [109, 195, 80]/255;
 nicegray = [110, 110, 110]/255;
+LineWidth = 1.5;
+MarkerSize = 24;
+FontSize = 12;
+plotOpts = {'LineWidth',LineWidth,'MarkerSize',MarkerSize};
 
 % vector of alpha values to plot
 A = linspace(l,r,5000);
@@ -141,48 +146,52 @@ if info.n == 2
 
     % plot original function
     subplot(1,2,1); hold on
-    ha = gca;
-    ha.LineWidth = 1; ha.FontSize = 18;
-    ha.XColor = 'k'; ha.YColor = 'k';
-    xlabel('$x_1$')
-    ylabel('$x_2$')
+
+    % axis properties
+    ha = gca; ha.XColor = 'k'; ha.YColor = 'k'; ha.Color = 'none';
+    ha.LineWidth = 1; ha.FontSize = FontSize;
+
+    % labels
+    xlabel('$x_1$','Interpreter','latex');
+    ylabel('$x_2$','Interpreter','latex');
 
     % plot original function and current point
     if iter == 1
         f_ = matlabFunction(info.f);
         [X1,X2] = meshgrid(linspace(-7,7,60),linspace(-30,70,60));
         contourf(X1,X2,f_(X1,X2),50)
-        plot(info.xk(1),info.xk(2),'.','MarkerSize',18,'Color','k')
+        plot(info.xk(1),info.xk(2),'.',plotOpts{:},'Color','k')
     end
 
     % plot current bracket and line search line
     Y = info.xk + A.*info.pk;
     gcolors = gray(8);
-    plot(Y(1,:),Y(2,:),'-','LineWidth',2,'Color',gcolors(iter+1,:))
+    plot(Y(1,:),Y(2,:),'-',plotOpts{:},'Color',gcolors(iter+1,:))
 
     % select next axis
     subplot(1,2,2); hold on
 
 end
 
-% plot line search function F
-ha = gca;
-ha.LineWidth = 1; ha.FontSize = 18;
-ha.XColor = 'k'; ha.YColor = 'k';
-xlabel('$\alpha$')
-ylabel('$F(\alpha)$')
+% axis properties
+ha = gca; ha.XColor = 'k'; ha.YColor = 'k'; ha.Color = 'none';
+ha.LineWidth = 1; ha.FontSize = FontSize;
+
+% labels
+xlabel('$\alpha$','Interpreter','latex');
+ylabel('$F(\alpha)$','Interpreter','latex');
 
 % plot F(alpha)
 if iter == 1
-    plot(A,info.F_(A),'linewidth',2,'Color',nicegray)
+    plot(A,info.F_(A),plotOpts{:},'Color',nicegray)
     xlim([l r])
 end
 
 % plot current cubic polynomial
-plot(A,P3(A),'linewidth',2,'Color',niceblue)
+plot(A,P3(A),plotOpts{:},'Color',niceblue)
 
 % plot minimum of the cubic, alpha_hat
-plot(alpha_hat,P3(alpha_hat),'.','Color',nicegreen,'MarkerSize',24)
+plot(alpha_hat,P3(alpha_hat),'.',plotOpts{:},'Color',nicegreen)
 
 end
 
@@ -192,9 +201,6 @@ function plot_initial
 
 hf = figure(1); hold on
 hf.Color = 'w';
-set(0,'DefaultTextInterpreter','latex'); % change the text interpreter
-set(0,'DefaultLegendInterpreter','latex'); % change the legend interpreter
-set(0,'DefaultAxesTickLabelInterpreter','latex'); % change the tick interpreter
 
 end
 
@@ -202,32 +208,35 @@ end
 % plot the final step taken
 function plot_final(info,x,alphamin,F)
 
-% colors
-nicered = [225, 86, 86]/255;
+% colors and other parameters
 niceblue = [77, 121, 167]/255;
+nicered = [225, 86, 86]/255;
+LineWidth = 1.5;
+MarkerSize = 24;
+plotOpts = {'LineWidth',LineWidth,'MarkerSize',MarkerSize};
 
-if info.n == 2 % 2d case
+if info.n == 2 % 2D case
 
     % select the correct subplot
     subplot(1,2,1); hold on
 
     % plot the point
-    plot(x(1),x(2),'.','MarkerSize',18,'Color',niceblue)
+    plot(x(1),x(2),'.',plotOpts{:},'Color',niceblue)
 
     % plot the point
     plot(info.xk(1)+alphamin*info.pk(1),info.xk(2)+alphamin*info.pk(2),...
-        '.','MarkerSize',18,'Color',nicered)
+        '.',plotOpts{:},'Color',nicered)
 
     % select the correct subplot
     subplot(1,2,2); hold on
 
     % plot the known optimal alpha
-    plot(alphamin,F(alphamin),'.','MarkerSize',18,'Color',nicered)
+    plot(alphamin,F(alphamin),'.',plotOpts{:},'Color',nicered)
 
-else % 1d case
+else % 1D case
 
     % plot the known optimal alpha
-    plot(alphamin,F(alphamin),'.','MarkerSize',18,'Color',nicered)
+    plot(alphamin,F(alphamin),'.',plotOpts{:},'Color',nicered)
 
 end
 
