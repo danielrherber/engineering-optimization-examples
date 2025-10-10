@@ -4,9 +4,9 @@
 % [course] Session 7 - Unconstrained Optimization (1)
 close all; clear; clc
 
-example_number = 3;
+example = 1;
 
-switch example_number
+switch example
     case 1
         xk = 1; % starting point
         xlimits = [-2.5 2.5]; ylimits = [-0.1 3]; % plotting limits
