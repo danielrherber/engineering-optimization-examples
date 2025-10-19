@@ -152,40 +152,40 @@ case 'init'
     modelflag = data{2};
     n = data{3};
     limits = data{4};
-    
+
     % create a grid of points
     N = 600;
     x1 = linspace(limits(1),limits(2),N)';
     x2 = linspace(limits(3),limits(4),N)';
     [X1,X2] = meshgrid(x1,x2);
-    
+
     % initialize figure
     hf = figure; hf.Color = 'w'; hold on
-    
+
     % create contour plot
     F__ = F_(X1,X2);
     F__(F__ > 600) = nan; % limit the data
     [~,hc] = contourf(X1,X2,F__,50);
     % hc.LineStyle = 'none';
-    
+
     % only if we are NOT visualizing the quadratic model
     if ~modelflag
         axis equal % so the circles look like circles
     end
-    
+
     % limits
     xlim([min(X1,[],"all") max(X1,[],"all")]); % x limits
     ylim([min(X2,[],"all") max(X2,[],"all")]); % y limits
-    
+
     % axis properties
     ha = gca; ha.XColor = 'k'; ha.YColor = 'k'; ha.Color = 'none';
     ha.LineWidth = 1; ha.FontSize = FontSize;
-    
+
     % labels
     xlabel('$x$','Interpreter','latex');
     ylabel('$y$','Interpreter','latex');
     zlabel('$f(x,y)$','Interpreter','latex');
-    
+
     % colors for each iteration
     colors = flipud(summer(n));
     output{1} = colors;
@@ -204,31 +204,31 @@ case 'iter-1'
     h0 = data{8};
     hs = data{9};
     hp_new = data{10};
-    
+
     % plot current point
     plot(x0(1),x0(2),'.',plotOpts{:},'color',colors(k,:))
-    
+
     % plot current trust-region circle
     plotcircle(D0,x0(1),x0(2),colors(k,:),LineWidth)
-    
+
     % only if we are visualizing the quadratic model
     if modelflag
-    
+
         % create grid of points around current point
         D0_ = linspace(-D0,D0,600)';
         [D0_1,D0_2] = meshgrid(D0_,D0_);
-    
+
         % values of the quadratic model
         Q0 = zeros(size(D0_1));
         for idx = 1:numel(D0_1)
             P0 = [D0_1(idx); D0_2(idx)];
             Q0(idx) = f0 + g0'*P0 + 0.5*P0'*h0*P0;
         end
-    
+
         % ignore values outside trust region
         I = (D0_1).^2 + (D0_2).^2 > D0^2;
         Q0(I) = nan;
-    
+
         % ignore values outside plot limits
         ha = gca;
         I = ha.XLim(1) > D0_1 + x0(1);
@@ -239,19 +239,19 @@ case 'iter-1'
         Q0(I) = nan;
         I = ha.YLim(2) < D0_2 + x0(2);
         Q0(I) = nan;
-    
+
         % limits based on  maximum value
         zlim([min(0,min(Q0(:))) max(Q0(:))])
-    
+
         % delete old model
         delete(hs)
         delete(hp_new)
-    
+
         % create surface plot
         hs = surf(x0(1) + D0_1, x0(2) + D0_2,Q0,Q0,...
             'LineStyle','none','FaceAlpha',0.25);
         output{1} = hs;
-    
+
     else
         output{1} = [];
     end
@@ -268,35 +268,35 @@ case 'iter-2'
     p0 = data{6};
     pN = data{7};
     g0 = data{8};
-    
+
     % only if we are visualizing the quadratic model
     if modelflag
-    
+
         % plot next point
         hp_new = plot3(x0(1),x0(2),q0,'.',plotOpts{:},'color',colors(k,:));
-    
+
         % assign
         output{1} = hp_new;
-    
+
     else
         output{1} = [];
     end
-    
+
     % step direction and length
     quiver(x0(1)-p0(1),x0(2)-p0(2),p0(1),p0(2),0,...
         plotOpts{:},'color',colors(k,:),'MaxHeadSize',0.6);
-    
+
     % newton direction
     quiver(x0(1)-p0(1),x0(2)-p0(2),pN(1)/norm(pN),pN(2)/norm(pN),0.45,...
         plotOpts{:},'color',colors(k,:),'LineStyle',':');
-    
+
     % negative gradient direction
     quiver(x0(1)-p0(1),x0(2)-p0(2),-g0(1)/norm(g0),-g0(2)/norm(g0),0.45,...
         plotOpts{:},'color',colors(k,:),'LineStyle','--');
-    
+
     % plot new point
     plot(x0(1),x0(2),'.',plotOpts{:},'color',colors(k,:));
-    
+
 end
 
 end
