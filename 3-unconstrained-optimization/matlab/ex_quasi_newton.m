@@ -5,11 +5,11 @@
 % [course] Session 8 - Unconstrained Optimization (2)
 close all; clear; clc
 
-test = 4;
+example = 4;
 
 updateformulaflag = 2; % 1: symmetric rank-one update, 2:BFGS
 
-switch test
+switch example
     %----------------------------------------------------------------------
     case 1 % quadratic function Example 12.9 in LNO
         quadraticFlag = true; % is this a quadratic function?
@@ -18,7 +18,7 @@ switch test
         x0 = zeros(size(Q,1),1); % initial point
         B = eye(length(Q)); % initial approximate hessian matrix
     %----------------------------------------------------------------------
-    case 2 % randomized 3d quadratic function example
+    case 2 % randomized 3D quadratic function example
         quadraticFlag = true; % is this a quadratic function?
         rng(3253) % set random seed
         q = rand(3);
@@ -27,7 +27,7 @@ switch test
         x0 = zeros(size(Q,1),1); % initial point
         B = eye(length(Q)); % initial approximate hessian matrix
     %----------------------------------------------------------------------
-    case 3 % randomized nd quadratic function example
+    case 3 % randomized nD quadratic function example
         quadraticFlag = true; % is this a quadratic function?
         rng(5754) % set random seed
         n = 20;
@@ -37,7 +37,7 @@ switch test
         x0 = zeros(n,1); % initial point
         B = eye(n); % initial approximate hessian matrix
     %----------------------------------------------------------------------
-    case 4 % nonlinear 2d example
+    case 4 % nonlinear 2D example
         quadraticFlag = false; % is this a quadratic function?
         n = 2; x = sym('x',[n 1]); % create symbolic variables
         f = x(1)^4 + 2*x(1)^3 + 24*x(1)^2 + x(2)^4 + 12*x(2)^2; % objective function
@@ -83,7 +83,7 @@ for iteration = 0:max_iterations-1
     disp_helper("p",p)
 
     % form string
-    str = strcat("________B =",mat2str(round(B,3)));
+    str = strcat("B =",mat2str(round(B,3)));
 
     % display string
     disp(str)
@@ -109,7 +109,7 @@ for iteration = 0:max_iterations-1
     disp_helper("s",s)
     disp_helper("y",y)
 
-    % (v) use symmetric rank-one update formula
+    % (v) use a quasi-Newton update formula
     switch updateformulaflag
         case 1 % use symmetric rank-one update formula
             z = y - B*s;
