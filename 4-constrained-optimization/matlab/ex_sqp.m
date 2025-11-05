@@ -1,6 +1,6 @@
 % ex_sqp.m
 % illustration of the sequential quadratic programming (SQP) method for a
-% a 2d problem with a single quadratic equality constraint
+% 2D problem with a single quadratic equality constraint
 % [reference] Section 15.5 in LNO
 % [course] Session 11 - Constrained Optimization (3)
 close all; clear; clc
@@ -9,8 +9,8 @@ close all; clear; clc
 % symbolic functions (Example 15.8 in LNO)
 syms x1 x2 l real
 x =  [x1;x2];
-f = exp(3*x1) + exp(-4*x2); % you can change this function
-Q = eye(2); % you can change this matrix
+f = exp(3*x1) + exp(-4*x2); % NOTE: you can change this 2D function
+Q = eye(2); % NOTE: you can change this 2x2 matrix
 g = x'*Q*x - 1;
 
 % Lagrangian
@@ -34,9 +34,9 @@ d2L = matlabFunction(d2L);
 
 %--------------------------------------------------------------------------
 % setup
-test = 4; % see below
+example = 1; % see below
 
-switch test
+switch example
     case 1
         % initial point
         x = [-1; 1]; l = -1;
@@ -51,7 +51,7 @@ switch test
         x = [-1/4; 15^(1/2)/4]; l = -0.25;
 end
 
-% plot quadratic model (in 3d)
+% plot quadratic model (in 3D)
 modelflag = true;
 
 % tolerances
@@ -60,7 +60,7 @@ OptimalityTolerance = 1e-10; % optimality tolerance
 MaxIterations = 100; % maximum number of iterations
 
 %--------------------------------------------------------------------------
-%--- Sequential Quadratic Programming (SQP) method
+% Sequential Quadratic Programming (SQP) method
 % problem information
 n = length(x); % number of variables
 m = length(l); % number of constraints
@@ -91,7 +91,7 @@ for k = 1:MaxIterations
     disp_helper("L",l,[])
     disp_helper("norm(dL)",norm(dL_),100)
     disp_helper("norm(g)",norm(g_),100)
-    disp_helper("M",F_ + rho*g_'*g_,6) % merit function
+    disp_helper("M",F_ + rho*(g_'*g_),6) % merit function
 
     % check termination conditions
     if norm(g_) <= ConstraintTolerance
@@ -127,10 +127,17 @@ end
 % plot helper 1
 function plot_helper_1(F,Q)
 
-set(0,'DefaultTextInterpreter','latex'); % change the text interpreter
-set(0,'DefaultLegendInterpreter','latex'); % change the legend interpreter
-set(0,'DefaultAxesTickLabelInterpreter','latex'); % change the tick interpreter
+% colors and other parameters
+FontSize = 18;
+
+% initialize figure
 hf = figure; hf.Color = 'w'; hold on
+
+% labels
+xlabel('$x_1$','Interpreter','latex');
+ylabel('$x_2$','Interpreter','latex');
+
+% plot objective function contours
 N = 1e3;
 x1 = linspace(-1.5,0,N);
 x2 = linspace(0,1.5,N);
@@ -138,10 +145,13 @@ xlim([min(x1),max(x1)]); ylim([min(x2),max(x2)]); % axis limits
 [X1,X2] = meshgrid(x1,x2);
 F_ = F(X1,X2);
 contour(X1,X2,F_,80)
+
+% plot the ellipse
 plot_ellipse(Q)
-xlabel('$x_1$'); ylabel('$x_2$'); % axis labels
-ha = gca;
-ha.LineWidth = 1; ha.FontSize = 18;
+
+% axis properties
+ha = gca; ha.XColor = 'k'; ha.YColor = 'k'; ha.ZColor = 'k';
+ha.Color = 'none'; ha.LineWidth = 1; ha.FontSize = FontSize;
 
 end
 
@@ -149,8 +159,16 @@ end
 % plot helper 2
 function hs = plot_helper_2(x,p,dL_,d2L_,g_,dG_,modelflag,hs)
 
+% colors and other parameters
+niceblue = [77, 121, 167]/255;
+nicered = [225, 86, 86]/255;
+nicegreen = [109, 195, 80]/255;
+LineWidth = 1.5;
+MarkerSize = 24;
+plotOpts = {'LineWidth',LineWidth,'MarkerSize',MarkerSize};
+
 % plot current point
-plot(x(1),x(2),'.','markersize',30,'color',[244, 67, 54]/255)
+plot(x(1),x(2),'.',plotOpts{:},'color',nicered)
 
 % compute radius to focus plot
 p0 = norm(p,2);
@@ -194,11 +212,6 @@ q = q/s;
 % delete old model
 delete(hs)
 
-% create surface plot
-if modelflag
-
-end
-
 % create line for linear approximation of the constraint
 p1_ = linspace(-1,1,500);
 p2_ = -(g_ + dG_(1)*p1_)/dG_(2);
@@ -211,16 +224,17 @@ for idx = 1:numel(p1_)
 end
 
 % plot stuff
-hs(1) = plot(x(1)+p1_,x(2)+p2_,'-','linewidth',2,'color',[129, 199, 132]/255);
-hs(2) = plot(x(1)+p(1),x(2)+p(2),'.','markersize',30,'color',[3, 169, 244]/255); % current point
+hs(1) = plot(x(1)+p1_,x(2)+p2_,'-',plotOpts{:},'color',nicegreen);
+hs(2) = plot(x(1)+p(1),x(2)+p(2),'.',plotOpts{:},'color',niceblue); % current point
 
+% create surface plot
 if modelflag
     hs(3) = surf(x(1)+p1,x(2)+p2,q,q,'LineStyle','none','FaceAlpha',0.75);
     hs(4) = plot3(x(1)+p1_,x(2)+p2_,(qc - S)/s,...
-        '-','linewidth',2,'color',[129, 199, 132]/255); % constraint line
+        '-',plotOpts{:},'color',[129, 199, 132]/255); % constraint line
     hs(5) = plot3(x(1)+p(1),x(2)+p(2), (0 + dL_'*p + 0.5*p'*d2L_*p - S)/s,...
-        '.','markersize',30,'color',[3, 169, 244]/255); % Lagrangian on constraint line
-    view(gca,[-22.6593443093639 42.8555513022069]); % change view
+        plotOpts{:},'color',[3, 169, 244]/255); % Lagrangian on constraint line
+    view(gca,[-22.659344 42.855551]); % change view
 end
 
 end
@@ -228,6 +242,11 @@ end
 %--------------------------------------------------------------------------
 % plot the quadratic function x'*Q*x = 1
 function plot_ellipse(Q_)
+
+% colors and other parameters
+LineWidth = 1.5;
+MarkerSize = 24;
+plotOpts = {'LineWidth',LineWidth,'MarkerSize',MarkerSize};
 
 % symbolically solve for x2 given x1
 syms x1 x2 a b c d real
@@ -253,7 +272,7 @@ x1_ = [x1_;x1_(1)];
 x2_ = [x2_;x2_(1)];
 
 % plot ellipse
-plot(x1_,x2_,'-','linewidth',2,'Color',[56, 142, 60]/255)
+plot(x1_,x2_,'-',plotOpts{:},'Color',[56, 142, 60]/255)
 
 end
 
