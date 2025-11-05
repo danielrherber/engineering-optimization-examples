@@ -1,5 +1,5 @@
 % ex_active_set.m
-% illustration of an active-set method to solve a 2d quadratic program with
+% illustration of an active-set method to solve a 2D quadratic program with
 % inequality constraints
 % [reference] Section 15.4 in LNO
 % [course] Session 11 - Constrained Optimization (3)
@@ -9,18 +9,17 @@ close all; clear; clc
 % f(x) = 1/2*x'*Q*x + c'*x + d and Ax >= b
 Q = [1 0; 0 2];
 c = [-3; -4];
-% c = [-2; -1] % <- try this too
+% c = [-2; -1]; % <- try this too
+% c = [-2; 0.5]; % <- try this too
 d = 17/2;
 A = [2 -1; -1 -1; 0 1];
 b = [0; -4; 0];
 
-% create the plot
-plot_helper(Q,c,d,A,b)
-
 % initial feasible point
 x = [0; 0];
-plot(x(1),x(2),'.b','markersize',24)
-text(x(1)-0.2,x(2),string(0),'color','w','FontSize',14)
+
+% create the plot
+plot_helper(Q,c,d,x,0,[],'init')
 
 % tolerances
 ConstraintTolerance = 1e-14;
@@ -121,57 +120,94 @@ for iter = 1:MaxIterations
     % update working set (this add all approximately active constraints)
     Iw = find(abs(A*x - b) <= ConstraintTolerance);
 
-    % update working set
+    % update based on current working set
     Ab = A(Iw,:); % constraint matrix
     Zb = null(Ab,'r'); % null space of the constraint matrix
     Abr = pinv(Ab); % right inverse of the constraint matrix
+
+    % compute Lagrange multipliers
+    g = Q*x + c; % objective gradient
+    Lb = Abr'*g; % use right inverse
+    E = Ab'*Lb - g; % error in FONC
 
     % display stuff
     disp_helper("---Iteration",iter,[])
     disp_helper("x",x,[])
     disp_helper("Iw",Iw,[])
     disp_helper("Zb",Zb,[])
-    plot(x(1),x(2),'.r','markersize',24)
-    text(x(1)-0.2,x(2),string(iter),'color','w','FontSize',14)
-
-    % compute Lagrange multipliers
-    g = Q*x + c; Lb = Abr'*g; E = Ab'*Lb - g;
     disp_helper("Lb",Lb,[])
     disp_helper("Lb Error",E,[])
-    if norm(E) > 1e-8
-        text(x(1)+0.15,x(2),'inconsistent multipliers','color','w','FontSize',14)
-    end
+
+    % plot iteration
+    plot_helper([],[],[],x,iter,E,'iter')
 
 end
 
 %--------------------------------------------------------------------------
 % function to create the initial plot
-function plot_helper(Q,c,d,A,b)
+function plot_helper(Q,c,d,x,iter,E,tasknum)
 
-set(0,'DefaultTextInterpreter','latex'); % change the text interpreter
-set(0,'DefaultLegendInterpreter','latex'); % change the legend interpreter
-set(0,'DefaultAxesTickLabelInterpreter','latex'); % change the tick interpreter
-hf = figure; hf.Color = 'w'; hold on
-N = 1e3;
-x1 = linspace(-0.5,4.5,N);
-x2 = linspace(-0.5,3,N);
-xlim([min(x1),max(x1)]); ylim([min(x2),max(x2)]); % axis limits
-[X1,X2] = meshgrid(x1,x2);
-F_ = nan(size(X1));
-for k = 1:numel(X1)
-    x = [X1(k);X2(k)];
-    F_(k) = 1/2*x'*Q*x + c'*x + d;
+% colors and other parameters
+niceblue = [77, 121, 167]/255;
+nicered = [225, 86, 86]/255;
+nicegreen = [109, 195, 80]/255;
+LineWidth = 1.5;
+MarkerSize = 24;
+FontSize = 18;
+plotOpts = {'LineWidth',LineWidth,'MarkerSize',MarkerSize};
+
+switch tasknum
+    %----------------------------------------------------------------------
+    case 'init' % initial point
+
+    % initialize figure
+    hf = figure; hf.Color = 'w'; hold on
+
+    % labels
+    xlabel('$x_1$','Interpreter','latex');
+    ylabel('$x_2$','Interpreter','latex');
+
+    % axis properties
+    ha = gca; ha.XColor = 'k'; ha.YColor = 'k'; ha.Color = 'none';
+    ha.LineWidth = 1; ha.FontSize = FontSize;
+
+    % plot objective function contours
+    N = 1e3;
+    x1 = linspace(-0.5,4.5,N);
+    x2 = linspace(-0.5,3,N);
+    xlim([min(x1),max(x1)]); ylim([min(x2),max(x2)]); % axis limits
+    [X1,X2] = meshgrid(x1,x2);
+    F_ = nan(size(X1));
+    for k = 1:numel(X1)
+        x_ = [X1(k);X2(k)];
+        F_(k) = 1/2*x_'*Q*x_ + c'*x_ + d;
+    end
+    contour(X1,X2,F_,50)
+
+    % hard-coded constraint boundary (does NOT depend on A and b)
+    hp = patch('XData',[4/3 0 4],'YData',[8/3 0 0]);
+    hp.EdgeColor = nicegreen;
+    hp.LineWidth = LineWidth;
+    hp.FaceAlpha = 0.15;
+
+    % plot initial feasible point
+    plot(x(1),x(2),'.',plotOpts{:},'Color',niceblue)
+    text(x(1)-0.2,x(2),string(iter),'FontSize',FontSize,'Color','k')
+
+    %----------------------------------------------------------------------
+    case 'iter' % plot current iteration
+
+    % plot current point
+    plot(x(1),x(2),'.',plotOpts{:},'Color',nicered)
+    text(x(1)-0.2,x(2),string(iter),'FontSize',FontSize,'Color','k')
+
+    % check if inconsistent multipliers
+    if norm(E) > 1e-8
+        text(x(1)+0.15,x(2),'inconsistent multipliers',...
+            'FontSize',FontSize,'Color','k')
+    end
+
 end
-contourf(X1,X2,F_,50)
-xlabel('$x_1$'); ylabel('$x_2$'); % axis labels
-ha = gca;
-ha.LineWidth = 1; ha.FontSize = 18;
-
-% hard-coded constraint boundary
-hp = patch('XData',[4/3 0 4],'YData',[8/3 0 0]);
-hp.EdgeColor = 'g';
-hp.LineWidth = 1.5;
-hp.FaceAlpha = 0.15;
 
 end
 
