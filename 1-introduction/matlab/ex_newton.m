@@ -6,9 +6,9 @@
 close all; clear; clc
 
 % select the example number (see cases below)
-example_number = 1;
+example = 1;
 
-switch example_number
+switch example
     case 1 % one-dimensional example
         f = @(x) [7 3 2 9 4]*[x^4 x^3 x^2 x^1 x^0]';
         fd = @(x) [28 9 4 9]*[x^3 x^2 x^1 x^0]';

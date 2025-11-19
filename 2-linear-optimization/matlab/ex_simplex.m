@@ -7,10 +7,10 @@
 % [course] Session 6 - Linear Optimization (3)
 close all; clear; clc
 
-% test number (see below)
-test = 1;
+% example number (see below)
+example = 1;
 
-switch test
+switch example
     case 1 % session 5 class example, Section 5.2 in LNO
         A = [-2 1 1 0 0; -1 2 0 1 0; 1 0 0 0 1];
         b = [2; 7; 3];
