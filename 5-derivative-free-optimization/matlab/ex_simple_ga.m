@@ -1,13 +1,13 @@
 % ex_simple_ga.m
-% illustration of a genetic algorithm (GA) on 2d problems using roulette
+% illustration of a genetic algorithm (GA) on 2D problems using roulette
 % wheel selection, linear crossover, and uniform random mutation
 % [reference] Section 7.6 in EDO
-% [course] Session 13 - Derivative-free Optimization (2)
+% [course] Session 13 - Derivative-Free Optimization (2)
 close all; clear; clc
 
-test = 2; % see cases below
+example = 2; % see cases below
 
-switch test
+switch example
     case 1
         fun = 1;
         max_iterations = 25; % maximum number of iterations
@@ -68,7 +68,7 @@ x2_= lb(2) + rand(np,1)*(ub(2)-lb(2));
 x = [x1_,x2_];
 
 % create initial plot
-[hp,parent_color,colors] = plot_helper1(obj,pen,con,lb,ub,x,max_iterations);
+[hp,parent_color,colors] = plot_helper1(obj,pen,lb,ub,x,max_iterations);
 
 % get optimal solution using fminunc so that it can be plotted
 switch fun
@@ -113,7 +113,7 @@ for k = 1:max_iterations
     children(children(:,2)>ub(2),2) = ub(2);
 
     % plot new population
-    hp = plot_helper2(hp,parent_color,children,colors,X_optimal,k,con,lb,ub);
+    hp = plot_helper2(hp,parent_color,children,colors,k,con,lb,ub,obj,pen);
     drawnow % draw the plot
     pause(0.5) % pause for the animation
 
@@ -122,32 +122,8 @@ for k = 1:max_iterations
 
 end
 
-% plot connections between best generation points
-plot(X_best(:,1),X_best(:,2),'c-','LineWidth',2)
-
-% go through each iteration a plot
-for k = 1:max_iterations
-
-    % plot best points in each generation
-    plot(X_best(k,1),X_best(k,2),'.','markersize',30,'color',colors(k,:))
-
-    % text for best points in each generation
-    text(X_best(k,1),X_best(k,2),string(k),'HorizontalAlignment','center',...
-        'FontSize',8)
-
-end
-
-% plot optimal point
-plot(X_optimal(:,1),X_optimal(:,2),'m.','markersize',30);
-
-% plot convergence behavior
-hf = figure; hf.Color = 'w'; hold on
-ha = gca; ha.FontSize = 18; ha.LineWidth = 1;
-plot(0:max_iterations-1,F_best,'b.-','LineWidth',2);
-plot(0:max_iterations-1,F_mean,'r.-','LineWidth',2);
-legend('Best','Mean')
-xlabel('Iteration Number'); ylabel('$f$'); % axis labels
-figure(1); % bring the first figure to the front
+% plot final results
+plot_helper3(X_best,obj,pen,max_iterations,X_optimal,F_best,F_mean)
 
 %--------------------------------------------------------------------------
 % implementation of roulette wheel selection
@@ -241,6 +217,15 @@ children = children + (pr <= p).*(rr-0.5)*Delta;
 end
 
 %--------------------------------------------------------------------------
+% constraint function for fmincon
+function [c,ceq] = mycon(x,con)
+
+c = [];
+ceq = con(x(1),x(2));
+
+end
+
+%--------------------------------------------------------------------------
 % function to make it easier to display things in the command window
 function disp_helper(name,number,n)
 
@@ -278,7 +263,14 @@ end
 
 %--------------------------------------------------------------------------
 % create initial plot
-function [hp,parent_color,colors] = plot_helper1(obj,pen,con,lb,ub,x,max_iterations)
+function [hp,parent_color,colors] = plot_helper1(obj,pen,lb,ub,x,max_iterations)
+
+% colors and other parameters
+nicegreen = [109, 195, 80]/255;
+FontSize = 18;
+LineWidth = 1.5;
+MarkerSize = 24;
+plotOpts = {'LineWidth',LineWidth,'MarkerSize',MarkerSize};
 
 % create grid of evaluation points
 N = 200;
@@ -288,24 +280,33 @@ x2 = linspace(lb(2),ub(2),N);
 
 % evaluate the function
 F_ = obj(X1,X2);
+F = obj(x(:,1),x(:,2));
 
 % remove penalty
 if ~isempty(pen)
     F_ = F_ - pen(X1,X2);
+    F = F - pen(x(:,1),x(:,2));
 end
 
-% create figure
-set(groot,'defaulttextinterpreter','latex');
-set(groot, 'defaultAxesTickLabelInterpreter','latex');
-set(groot, 'defaultLegendInterpreter','latex');
+% initialize figure
 hf = figure; hf.Color = 'w'; hold on
-contourf(X1,X2,F_,30);
-xlim([lb(1) ub(1)]); ylim([lb(2) ub(2)]); % axis limits
-xlabel('$x_1$'); ylabel('$x_2$'); % axis labels
-ha = gca; ha.FontSize = 18; ha.LineWidth = 1;
+
+% labels
+xlabel('$x_1$','Interpreter','latex');
+ylabel('$x_2$','Interpreter','latex');
+
+% axis properties
+ha = gca; ha.XColor = 'k'; ha.YColor = 'k'; ha.ZColor = 'k';
+ha.Color = 'none'; ha.LineWidth = 1; ha.FontSize = FontSize;
+
+% plot objective function contours
+contour3(X1,X2,F_,60,'LineWidth',LineWidth);
+
+% axis limits
+xlim([lb(1) ub(1)]); ylim([lb(2) ub(2)]); zlim([min(F_(:)) max(F_(:))]);
 
 % plot initial population
-hp(1) = plot(x(:,1),x(:,2),'g.','markersize',20);
+hp(1) = plot3(x(:,1),x(:,2),F,'.',plotOpts{:},'Color',nicegreen);
 
 % plot colors
 parent_color = [0.5 0.5 0.5];
@@ -315,24 +316,38 @@ end
 
 %--------------------------------------------------------------------------
 % plot new population
-function hp = plot_helper2(hp,parent_color,children,colors,X_optimal,k,con,lb,ub)
+function hp = plot_helper2(hp,parent_color,children,colors,k,con,lb,ub,obj,pen)
+
+% colors and other parameters
+nicegreen = [109, 195, 80]/255;
+LineWidth = 2*1.5;
+MarkerSize = 24;
+plotOpts = {'LineWidth',LineWidth,'MarkerSize',MarkerSize};
 
 % change old population points to gray and smaller
 hp(end).Color = parent_color;
-hp(end).MarkerSize = 10;
+hp(end).MarkerSize = MarkerSize/2;
+
+% current population function values
+F = obj(children(:,1),children(:,2));
+
+% remove penalty
+if ~isempty(pen)
+    F = F - pen(children(:,1),children(:,2));
+end
 
 % plot current population
-hp(end+1) = plot(children(:,1),children(:,2),'.','markersize',20,'color',colors(k,:));
+hp(end+1) = plot3(children(:,1),children(:,2),F,...
+    '.','markersize',MarkerSize,'color',colors(k,:));
 
 % plot constraint line
 if ~isempty(con)
     y1 = fsolve(@(y) con(lb(1),y),lb(2),optimoptions('fsolve','Display','none'));
     y2 = fsolve(@(y) con(ub(1),y),lb(2),optimoptions('fsolve','Display','none'));
-    plot([lb(1) ub(1)],[y1,y2],'g-','linewidth',2)
+    x1 = linspace(lb(1),ub(1),1e3)';
+    x2 = linspace(y1,y2,1e3)';
+    plot3(x1,x2,obj(x1,x2)-pen(x1,x2),'-',plotOpts{:},'Color',nicegreen)
 end
-
-% plot optimal point
-plot(X_optimal(:,1),X_optimal(:,2),'m.','markersize',30);
 
 % customize
 ha = gca;
@@ -342,10 +357,63 @@ box on
 end
 
 %--------------------------------------------------------------------------
-% constraint function for fmincon
-function [c,ceq] = mycon(x,con)
+% plot best points and new plot of convergence behavior
+function plot_helper3(X_best,obj,pen,max_iterations,X_optimal,F_best,F_mean)
 
-c = [];
-ceq = con(x(1),x(2));
+% colors and other parameters
+niceblue = [77, 121, 167]/255;
+nicered = [225, 86, 86]/255;
+nicepink = [239, 142, 219]/255;
+nicepurple = [150, 103, 126]/255;
+FontSize = 18;
+LineWidth = 1.5;
+MarkerSize = 24;
+plotOpts = {'LineWidth',LineWidth,'MarkerSize',MarkerSize};
+
+% current population function values
+F = obj(X_best(:,1),X_best(:,2));
+F_optimal = obj(X_optimal(:,1),X_optimal(:,2));
+
+% remove penalty
+if ~isempty(pen)
+    F = F - pen(X_best(:,1),X_best(:,2));
+    F_optimal = F_optimal - pen(X_optimal(:,1),X_optimal(:,2));
+end
+
+% plot connections between best generation points
+plot3(X_best(:,1),X_best(:,2),F,...
+    '.-','LineWidth',LineWidth,'MarkerSize',MarkerSize*2,'Color',nicepink)
+
+% text for best points in each generation
+for k = 1:max_iterations
+
+    text(X_best(k,1),X_best(k,2),F(k),string(k),...
+        'HorizontalAlignment','center','FontSize',FontSize/1.5)
+
+end
+
+% plot optimal point
+plot3(X_optimal(:,1),X_optimal(:,2),F_optimal,'.',plotOpts{:},'Color',nicepurple);
+
+% initialize figure
+hf = figure; hf.Color = 'w'; hold on
+
+% labels
+xlabel('Iteration Number');
+ylabel('$f$','Interpreter','latex');
+
+% axis properties
+ha = gca; ha.XColor = 'k'; ha.YColor = 'k';
+ha.Color = 'none'; ha.LineWidth = 1; ha.FontSize = FontSize;
+
+% plot convergence behavior
+plot(0:max_iterations-1,F_best,'.-',plotOpts{:},'Color',niceblue);
+plot(0:max_iterations-1,F_mean,'.-',plotOpts{:},'Color',nicered);
+
+% legend
+legend('Best','Mean')
+
+% bring the first figure to the front
+figure(1);
 
 end
