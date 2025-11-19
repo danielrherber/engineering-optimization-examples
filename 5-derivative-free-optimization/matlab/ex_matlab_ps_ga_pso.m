@@ -1,10 +1,10 @@
 % ex_matlab_ps_ga_pso.m
 % examples of patternsearch, ga, and particleswarm derivative-free
 % functions in matlab
-% [course] Session 13 - Derivative-free Optimization (2)
+% [course] Session 13 - Derivative-Free Optimization (2)
 close all; clear; clc
 
-method = 1; % see cases below
+method = 3; % see cases below
 
 % create objective function
 syms x y real
