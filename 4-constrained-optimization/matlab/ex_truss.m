@@ -1,8 +1,7 @@
 % ex_truss.m
 % ten-bar truss constrained optimization problem
 % [reference] Section D.2.2 in EDO
-% [course] Session 12 - Constrained Optimization (4) and Derivative-free
-% Optimization (1)
+% [course] Session 12 - Constrained (4) and Derivative-Free Optimization (1)
 close all; clear; clc
 
 % problem data
