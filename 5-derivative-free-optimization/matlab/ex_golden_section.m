@@ -1,13 +1,12 @@
 % ex_golden_section.m
-% illustration of golden-section search bracketing for minimizing a 1d
+% illustration of golden-section search bracketing for minimizing a 1D
 % function
-% [course] Session 12 - Constrained Optimization (4) and Derivative-free
-% Optimization (1)
+% [course] Session 12 - Constrained (4) and Derivative-Free Optimization (1)
 close all; clear; clc
 
 % minimize the function from Session 7
 f = @(x) exp(0.5*x-1).*(x+1).^2;
-% f = @(x) (x+1).^2;
+% f = @(x) (x+1).^2; % <- try this too
 
 % initial bracket
 a = -8;
@@ -47,17 +46,12 @@ for k = 1:max_iterations
     if fc < fd
         r = b; % point to remove
         b = d; % update
-        plot_helper_update(1,f,c,d,r) % update figure
+        plot_helper_update(1,f,c,d,r,a,b,fc,fd,k) % update figure
     else
         r = a; % point to remove
         a = c; % update
-        plot_helper_update(2,f,c,d,r) % update figure
+        plot_helper_update(2,f,c,d,r,a,b,fc,fd,k) % update figure
     end
-
-    % display iteration information
-    disp_helper("--- iteration",k,[])
-    disp_helper("[a,b]",[a,b],[])
-    disp_helper("best f(x)",min(fc,fd),[])
 
     pause(1)
 
@@ -85,7 +79,7 @@ plot(b,f(b),'b.','markersize',30,'color',niceblue)
 end
 
 %--------------------------------------------------------------------------
-function plot_helper_update(flag,f,c,d,r)
+function plot_helper_update(flag,f,c,d,r,a,b,fc,fd,k)
 
 % colors
 niceblue = [77, 121, 167]/255;
@@ -105,6 +99,11 @@ end
 
 % gray out old point
 plot(r,f(r),'.','markersize',30,'Color',nicegray);
+
+% display iteration information
+disp_helper("--- iteration",k,[])
+disp_helper("[a,b]",[a,b],[])
+disp_helper("best f(x)",min(fc,fd),[])
 
 end
 
