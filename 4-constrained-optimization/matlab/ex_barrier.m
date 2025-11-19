@@ -1,8 +1,7 @@
 % ex_barrier.m
 % example of a barrier method for constrained optimization
 % [reference] Section 16.2.1 in LNO
-% [course] Session 12 - Constrained Optimization (4) and Derivative-free
-% Optimization (1)
+% [course] Session 12 - Constrained (4) and Derivative-Free Optimization (1)
 close all; clear; clc
 
 % problem functions (Example 16.1 in LNO)
