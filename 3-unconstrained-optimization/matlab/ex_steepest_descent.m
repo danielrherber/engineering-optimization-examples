@@ -4,7 +4,7 @@
 % [course] Session 8 - Unconstrained Optimization (2)
 close all; clear; clc
 
-example = 4;
+example = 2;
 
 switch example
     %----------------------------------------------------------------------
