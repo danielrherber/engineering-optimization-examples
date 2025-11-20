@@ -1,12 +1,12 @@
 % ex_simple_pso.m
-% illustration of particle swarm optimization (PSO) on 2d problems
+% illustration of particle swarm optimization (PSO) on 2D problems
 % [reference] Section 7.7 in EDO
-% [course] Session 13 - Derivative-free Optimization (2)
+% [course] Session 13 - Derivative-Free Optimization (2)
 close all; clear; clc
 
-test = 2; % see cases below
+example = 2; % see cases below
 
-switch test
+switch example
     case 1
         fun = 1; % objective function (see below)
         max_iterations = 40; % maximum number of iterations
@@ -83,9 +83,6 @@ p = 0.1*(1-2*rand(np,2)).*(ub-lb);
 % limit step based on maximum step
 p = step_norm_limiter(p,p_norm_max);
 
-% create initial plot
-[hp,parent_color,colors] = plot_helper1(obj,pen,con,lb,ub,x,p,max_iterations);
-
 % get optimal solution using fminunc so that it can be plotted
 switch fun
     case 1
@@ -100,6 +97,9 @@ switch fun
         options = optimoptions('fmincon','Display','iter');
         X_optimal = fmincon(@(x) obj(x(1),x(2)),[0,0],[],[],[],[],[],[],@(x)mycon(x,con),options);
 end
+
+% create initial plot
+[hp,parent_color,colors] = plot_helper1(obj,pen,lb,ub,x,p,max_iterations,X_optimal);
 
 % initialize
 X_best = nan(max_iterations,2); F_best = nan(max_iterations,1); F_mean = nan(max_iterations,1);
@@ -141,38 +141,41 @@ for k = 1:max_iterations
     x = x + p;
 
     % plot new swarm
-    hp = plot_helper2(hp,parent_color,x,p,colors,X_optimal,k,con,lb,ub);
+    hp = plot_helper2(hp,parent_color,x,p,colors,k,con,lb,ub,obj,pen);
     drawnow % draw the plot
     pause(0.5) % pause for the animation
 
 end
 
-% plot connections between best generation points
-plot(X_best(:,1),X_best(:,2),'c-','LineWidth',2)
+% plot final results
+plot_helper3(X_best,obj,pen,max_iterations,X_optimal,F_best,F_mean)
 
-% go through each iteration a plot
-for k = 1:max_iterations
+%--------------------------------------------------------------------------
+% constraint function for fmincon
+function [c,ceq] = mycon(x,con)
 
-    % plot best points in each generation
-    plot(X_best(k,1),X_best(k,2),'.','markersize',30,'color',colors(k,:))
-
-    % text for best points in each generation
-    text(X_best(k,1),X_best(k,2),string(k),'HorizontalAlignment','center',...
-        'FontSize',8)
+c = [];
+ceq = con(x(1),x(2));
 
 end
 
-% plot optimal point
-plot(X_optimal(:,1),X_optimal(:,2),'m.','markersize',30);
+%--------------------------------------------------------------------------
+% potentially limit norm of the step
+function p = step_norm_limiter(p,p_norm_max)
 
-% plot convergence behavior
-hf = figure; hf.Color = 'w'; hold on
-ha = gca; ha.FontSize = 18; ha.LineWidth = 1;
-plot(0:max_iterations-1,F_best,'b.-','LineWidth',2);
-plot(0:max_iterations-1,F_mean,'r.-','LineWidth',2);
-legend('Best','Mean')
-xlabel('Iteration Number'); ylabel('$f$'); % axis labels
-figure(1); % bring the first figure to the front
+% compute norm of each step
+p_norm = sqrt(sum(p.^2,2));
+
+% get indices that are larger than the maximum
+I = p_norm > p_norm_max;
+
+% normalize
+p_limited = p_norm_max*p./p_norm;
+
+% modify only the large steps
+p(I,:) = p_limited(I,:);
+
+end
 
 %--------------------------------------------------------------------------
 % function to make it easier to display things in the command window
@@ -212,7 +215,14 @@ end
 
 %--------------------------------------------------------------------------
 % create initial plot
-function [hp,parent_color,colors] = plot_helper1(obj,pen,con,lb,ub,x,p,max_iterations)
+function [hp,parent_color,colors] = plot_helper1(obj,pen,lb,ub,x,p,max_iterations,X_optimal)
+
+% colors and other parameters
+nicegreen = [109, 195, 80]/255;
+FontSize = 18;
+LineWidth = 1.5;
+MarkerSize = 24;
+plotOpts = {'LineWidth',LineWidth,'MarkerSize',MarkerSize};
 
 % create grid of evaluation points
 N = 200;
@@ -221,26 +231,37 @@ x2 = linspace(lb(2),ub(2),N);
 [X1,X2] = meshgrid(x1,x2);
 
 % evaluate the function
-F_ = obj(X1,X2);
+F_contour = obj(X1,X2);
+F = obj(x(:,1),x(:,2));
+F_optimal = obj(X_optimal(:,1),X_optimal(:,2));
 
 % remove penalty
 if ~isempty(pen)
-    F_ = F_ - pen(X1,X2);
+    F_contour = F_contour - pen(X1,X2);
+    F = F - pen(x(:,1),x(:,2));
+    F_optimal = F_optimal - pen(X_optimal(:,1),X_optimal(:,2));
 end
 
-% create figure
-set(groot,'defaulttextinterpreter','latex');
-set(groot, 'defaultAxesTickLabelInterpreter','latex');
-set(groot, 'defaultLegendInterpreter','latex');
+% initialize figure
 hf = figure; hf.Color = 'w'; hold on
-contourf(X1,X2,F_,30);
-xlim([lb(1) ub(1)]); ylim([lb(2) ub(2)]); % axis limits
-xlabel('$x_1$'); ylabel('$x_2$'); % axis labels
-ha = gca; ha.FontSize = 18; ha.LineWidth = 1;
+
+% labels
+xlabel('$x_1$','Interpreter','latex');
+ylabel('$x_2$','Interpreter','latex');
+
+% axis properties
+ha = gca; ha.XColor = 'k'; ha.YColor = 'k'; ha.ZColor = 'k';
+ha.Color = 'none'; ha.LineWidth = 1; ha.FontSize = FontSize;
+
+% plot objective function contours
+contour3(X1,X2,F_contour,60,'LineWidth',LineWidth);
+
+% axis limits
+xlim([lb(1) ub(1)]); ylim([lb(2) ub(2)]); zlim([min(F_optimal) max(F_contour(:))]);
 
 % plot initial population
-hp(1) = plot(x(:,1),x(:,2),'g.','markersize',20);
-hp(2) = quiver(x(:,1),x(:,2),p(:,1),p(:,2),'off','g');
+hp(1) = plot3(x(:,1),x(:,2),F,'.',plotOpts{:},'Color',nicegreen);
+hp(2) = quiver3(x(:,1),x(:,2),F,p(:,1),p(:,2),zeros(size(F)),'off','Color',nicegreen);
 
 % plot colors
 parent_color = [0.5 0.5 0.5];
@@ -250,7 +271,13 @@ end
 
 %--------------------------------------------------------------------------
 % plot new population
-function hp = plot_helper2(hp,parent_color,x,p,colors,X_optimal,k,con,lb,ub)
+function hp = plot_helper2(hp,parent_color,x,p,colors,k,con,lb,ub,obj,pen)
+
+% colors and other parameters
+nicegreen = [109, 195, 80]/255;
+LineWidth = 2*1.5;
+MarkerSize = 24;
+plotOpts = {'LineWidth',LineWidth,'MarkerSize',MarkerSize};
 
 % change old population points to gray and smaller
 hp(end-1).Color = parent_color;
@@ -259,21 +286,31 @@ hp(end).Color = parent_color;
 hp(end).MarkerSize = 10;
 hp(end).LineStyle = 'none';
 
+% current population function values
+F = obj(x(:,1),x(:,2));
+
+% remove penalty
+if ~isempty(pen)
+    F = F - pen(x(:,1),x(:,2));
+end
+
 % plot current population
-hp(end+1) = plot(x(:,1),x(:,2),'.','markersize',20,'color',colors(k,:));
+hp(end+1) = plot3(x(:,1),x(:,2),F,...
+    '.','markersize',MarkerSize,'color',colors(k,:));
 
 % plot current steps
-hp(end+1) = quiver(x(:,1),x(:,2),p(:,1),p(:,2),'off','color',colors(k,:));
+hp(end+1) = quiver3(x(:,1),x(:,2),F,p(:,1),p(:,2),zeros(size(F)),'off',...
+    'Color',colors(k,:),'LineWidth',LineWidth);
 
 % plot constraint line
 if ~isempty(con)
     y1 = fsolve(@(y) con(lb(1),y),lb(2),optimoptions('fsolve','Display','none'));
     y2 = fsolve(@(y) con(ub(1),y),lb(2),optimoptions('fsolve','Display','none'));
-    plot([lb(1) ub(1)],[y1,y2],'g-','linewidth',2)
+    x1 = linspace(lb(1),ub(1),1e3)';
+    x2 = linspace(y1,y2,1e3)';
+    plot3(x1,x2,obj(x1,x2)-pen(x1,x2),'-',plotOpts{:},'Color',nicegreen)
+    % plot([lb(1) ub(1)],[y1,y2],'g-','linewidth',2)
 end
-
-% plot optimal point
-plot(X_optimal(:,1),X_optimal(:,2),'m.','markersize',30);
 
 % customize
 ha = gca;
@@ -283,28 +320,63 @@ box on
 end
 
 %--------------------------------------------------------------------------
-% constraint function for fmincon
-function [c,ceq] = mycon(x,con)
+% plot best points and new plot of convergence behavior
+function plot_helper3(X_best,obj,pen,max_iterations,X_optimal,F_best,F_mean)
 
-c = [];
-ceq = con(x(1),x(2));
+% colors and other parameters
+niceblue = [77, 121, 167]/255;
+nicered = [225, 86, 86]/255;
+nicepink = [239, 142, 219]/255;
+nicepurple = [150, 103, 126]/255;
+FontSize = 18;
+LineWidth = 1.5;
+MarkerSize = 24;
+plotOpts = {'LineWidth',LineWidth,'MarkerSize',MarkerSize};
+
+% current population function values
+F = obj(X_best(:,1),X_best(:,2));
+F_optimal = obj(X_optimal(:,1),X_optimal(:,2));
+
+% remove penalty
+if ~isempty(pen)
+    F = F - pen(X_best(:,1),X_best(:,2));
+    F_optimal = F_optimal - pen(X_optimal(:,1),X_optimal(:,2));
+end
+
+% plot connections between best generation points
+plot3(X_best(:,1),X_best(:,2),F,...
+    '.-','LineWidth',LineWidth,'MarkerSize',MarkerSize*2,'Color',nicepink)
+
+% text for best points in each generation
+for k = 1:max_iterations
+
+    text(X_best(k,1),X_best(k,2),F(k),string(k),...
+        'HorizontalAlignment','center','FontSize',FontSize/1.5)
 
 end
 
-%--------------------------------------------------------------------------
-% potentially limit norm of the step
-function p = step_norm_limiter(p,p_norm_max)
+% plot optimal point
+plot3(X_optimal(:,1),X_optimal(:,2),F_optimal,'.',plotOpts{:},'Color',nicepurple);
 
-% compute norm of each step
-p_norm = sqrt(sum(p.^2,2));
+% initialize figure
+hf = figure; hf.Color = 'w'; hold on
 
-% get indices that are larger than the maximum
-I = p_norm > p_norm_max;
+% labels
+xlabel('Iteration Number');
+ylabel('$f$','Interpreter','latex');
 
-% normalize
-p_limited = p_norm_max*p./p_norm;
+% axis properties
+ha = gca; ha.XColor = 'k'; ha.YColor = 'k';
+ha.Color = 'none'; ha.LineWidth = 1; ha.FontSize = FontSize;
 
-% modify only the large steps
-p(I,:) = p_limited(I,:);
+% plot convergence behavior
+plot(0:max_iterations-1,F_best,'.-',plotOpts{:},'Color',niceblue);
+plot(0:max_iterations-1,F_mean,'.-',plotOpts{:},'Color',nicered);
+
+% legend
+legend('Best','Mean')
+
+% bring the first figure to the front
+figure(1);
 
 end
