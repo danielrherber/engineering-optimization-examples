@@ -114,12 +114,12 @@ for k = 1:MaxIterations
 
     % plot current iteration
     hs = plot_helper_2(x,p,dL_,d2L_,g_,dG_,modelflag,hs);
+    drawnow
+    pause(1.5)
 
     % new estimates of the solution
     x = x + p; % variables
     l = l + v; % Lagrange multipliers
-
-    pause
 
 end
 

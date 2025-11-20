@@ -46,7 +46,7 @@ for iter = 1:niter
 
     % plotting
     plot_1d(xk,F,q,p,iter,xlimits,ylimits,niter,'iter-1')
-    pause % so you can see the steps
+    pause(1) % so you can see the steps
 
     % take step
     xk = xk + p;
@@ -54,7 +54,7 @@ for iter = 1:niter
 
     % plotting
     plot_1d(xk,F,q,p,iter,xlimits,ylimits,niter,'iter-2')
-    pause % so you can see the steps
+    pause(1) % so you can see the steps
 
 end
 
