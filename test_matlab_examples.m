@@ -7,28 +7,31 @@ addpath(genpath(folder_name))
 
 % list of examples to run
 ex = {};
-ex{end+1} = @ex_building_wire;
-ex{end+1} = @ex_newton;
-ex{end+1} = @ex_production_planning;
-ex{end+1} = @ex_traffic_network;
-ex{end+1} = @ex_assignment;
-ex{end+1} = @ex_network;
-ex{end+1} = @ex_null_space;
-ex{end+1} = @ex_simplex;
-ex{end+1} = @ex_newton_minimization;
-ex{end+1} = @ex_nn;
-ex{end+1} = @ex_quasi_newton;
-ex{end+1} = @ex_steepest_descent;
-ex{end+1} = @ex_trust_region;
-ex{end+1} = @ex_active_set;
-ex{end+1} = @ex_barrier;
-ex{end+1} = @ex_sqp;
-ex{end+1} = @ex_truss;
-ex{end+1} = @ex_golden_section;
-ex{end+1} = @ex_matlab_ps_ga_pso;
-ex{end+1} = @ex_simple_ga;
-ex{end+1} = @ex_simple_pso;
-% ex{end+1} = @ex_surrogateopt;
+ex{end+1} = @ex_building_wire; % 1
+ex{end+1} = @ex_newton; % 1
+ex{end+1} = @ex_production_planning; % 1
+ex{end+1} = @ex_traffic_network; % 1
+ex{end+1} = @ex_assignment; % 2
+ex{end+1} = @ex_maximum_flow; % 2
+ex{end+1} = @ex_network; % 2
+ex{end+1} = @ex_null_space; % 2
+ex{end+1} = @ex_simplex; % 2
+ex{end+1} = @ex_line_search_cubic; % 3
+ex{end+1} = @ex_newton_minimization; % 3
+ex{end+1} = @ex_nn; % 3
+ex{end+1} = @ex_quasi_newton; % 3
+ex{end+1} = @ex_steepest_descent; % 3
+ex{end+1} = @ex_trust_region; % 3
+ex{end+1} = @ex_active_set; % 4
+ex{end+1} = @ex_barrier; % 4
+ex{end+1} = @ex_sqp; % 4
+ex{end+1} = @ex_termination_conditions; % 4
+ex{end+1} = @ex_truss; % 4
+ex{end+1} = @ex_direct_1d; % 5
+ex{end+1} = @ex_golden_section; % 5
+ex{end+1} = @ex_matlab_ps_ga_pso; % 5
+ex{end+1} = @ex_simple_ga; % 5
+ex{end+1} = @ex_simple_pso; % 5
 
 % number of examples
 n = length(ex);
@@ -43,14 +46,14 @@ for idx = 1:n
     local_function(ex{idx})
 
     % increment progress bar
-    waitbar(idx/n, f, sprintf('Progress: %d %%', floor(idx/n*100)));
-
+    waitbar(idx/n, f, strcat("Progress: ",string(floor(idx/n*100))," \%"));
+       
 end
 
 % delete the progress bar
 delete(f)
 
-% display inuse licenses
+% get a list of licenses in use
 license('inuse')
 
 % local function (to control the script workspace)
