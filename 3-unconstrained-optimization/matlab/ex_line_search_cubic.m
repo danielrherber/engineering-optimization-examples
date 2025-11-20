@@ -9,29 +9,29 @@ example = 1;
 
 switch example
     case 1 % Example 11.9 in LNO
-        syms x alpha % initialize symbolic variables
+        syms x a % initialize symbolic variables
         f(x) = 5 - x - log(4.5-x); % function of interest
         xk = 0; % current point
         pk = 1; % search direction (descent only)
         l = 2; r = 4; % current bracket [l,r] should contain a minimum
-        F(alpha) = f(xk + alpha*pk); % line search function
+        F(a) = f(xk + a*pk); % line search function
         alphamin = 7/2; % actual minimum
         eta = 0.1; % Wolfe condition parameter
     case 2
-        syms x1 x2 alpha % initialize symbolic variables
+        syms x1 x2 a % initialize symbolic variables
         x = [x1;x2];
         f(x) = (x2-x1^2)^2 + (x1-1)^2/100; % function of interest
         xk = [-5;60]; % current point
         pk = [1;-10]; % search direction (descent only)
         l = 0; r = 8; % current bracket [l,r] should contain a minimum
-        xk1 = xk + alpha*pk; % formula for the next point
-        F(alpha) = f(xk1(1),xk1(2)); % line search function
+        xk1 = xk + a*pk; % formula for the next point
+        F(a) = f(xk1(1),xk1(2)); % line search function
         alphamin = 5.9160857769635810631436; % actual minimum
         eta = 100; % Wolfe condition parameter
 end
 
 % calculate directional derivative
-dF = diff(F,alpha,1);
+dF = diff(F,a,1);
 
 % create Matlab functions
 F_ = matlabFunction(F);
