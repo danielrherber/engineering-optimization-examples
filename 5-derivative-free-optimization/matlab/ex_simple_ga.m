@@ -67,9 +67,6 @@ x1_= lb(1) + rand(np,1)*(ub(1)-lb(1));
 x2_= lb(2) + rand(np,1)*(ub(2)-lb(2));
 x = [x1_,x2_];
 
-% create initial plot
-[hp,parent_color,colors] = plot_helper1(obj,pen,lb,ub,x,max_iterations);
-
 % get optimal solution using fminunc so that it can be plotted
 switch fun
     case 1
@@ -84,6 +81,9 @@ switch fun
         options = optimoptions('fmincon','Display','iter');
         X_optimal = fmincon(@(x) obj(x(1),x(2)),[0,0],[],[],[],[],[],[],@(x)mycon(x,con),options);
 end
+
+% create initial plot
+[hp,parent_color,colors] = plot_helper1(obj,pen,lb,ub,x,max_iterations,X_optimal);
 
 % initialize
 X_best = nan(max_iterations,2); F_best = nan(max_iterations,1); F_mean = nan(max_iterations,1);
@@ -263,7 +263,7 @@ end
 
 %--------------------------------------------------------------------------
 % create initial plot
-function [hp,parent_color,colors] = plot_helper1(obj,pen,lb,ub,x,max_iterations)
+function [hp,parent_color,colors] = plot_helper1(obj,pen,lb,ub,x,max_iterations,X_optimal)
 
 % colors and other parameters
 nicegreen = [109, 195, 80]/255;
@@ -279,13 +279,15 @@ x2 = linspace(lb(2),ub(2),N);
 [X1,X2] = meshgrid(x1,x2);
 
 % evaluate the function
-F_ = obj(X1,X2);
+F_contour = obj(X1,X2);
 F = obj(x(:,1),x(:,2));
+F_optimal = obj(X_optimal(:,1),X_optimal(:,2));
 
 % remove penalty
 if ~isempty(pen)
-    F_ = F_ - pen(X1,X2);
+    F_contour = F_contour - pen(X1,X2);
     F = F - pen(x(:,1),x(:,2));
+    F_optimal = F_optimal - pen(X_optimal(:,1),X_optimal(:,2));
 end
 
 % initialize figure
@@ -300,10 +302,10 @@ ha = gca; ha.XColor = 'k'; ha.YColor = 'k'; ha.ZColor = 'k';
 ha.Color = 'none'; ha.LineWidth = 1; ha.FontSize = FontSize;
 
 % plot objective function contours
-contour3(X1,X2,F_,60,'LineWidth',LineWidth);
+contour3(X1,X2,F_contour,60,'LineWidth',LineWidth);
 
 % axis limits
-xlim([lb(1) ub(1)]); ylim([lb(2) ub(2)]); zlim([min(F_(:)) max(F_(:))]);
+xlim([lb(1) ub(1)]); ylim([lb(2) ub(2)]); zlim([min(F_optimal) max(F_contour(:))]);
 
 % plot initial population
 hp(1) = plot3(x(:,1),x(:,2),F,'.',plotOpts{:},'Color',nicegreen);
