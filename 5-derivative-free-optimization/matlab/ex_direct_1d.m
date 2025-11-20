@@ -1,13 +1,13 @@
 % ex_direct_1d.m
-% illustration of the dividing rectangles (DIRECT) algorithm in 1d
+% illustration of the dividing rectangles (DIRECT) algorithm in 1D
 % [reference] Section 7.5 in EDO
-% [course] Session 13 - Derivative-free Optimization (2)
+% [course] Session 13 - Derivative-Free Optimization (2)
 close all; clear; clc
 
-test = 1;
+example = 1;
 plotflag = true;
 
-switch test
+switch example
     %----------------------------------------------------------------------
     case 1
         fun = @(x) sin(x) + sin(10/3*x);
@@ -18,7 +18,7 @@ switch test
     case 2
         fun = @(x) round(-x.^2.*abs(1+sin(x)).*exp(-x/8)/3);
         a = 0; % lower limit
-        b = 150; % upper limit
+        b = 100; % upper limit
         YLimits = [-25 1]; % function value limits for plotting
     %----------------------------------------------------------------------
     case 3
@@ -26,6 +26,12 @@ switch test
         a = 0; % lower limit
         b = 150; % upper limit
         YLimits = [-115 1]; % function value limits for plotting
+    %----------------------------------------------------------------------
+    case 4
+        fun = @(x) exp(0.5*x-1).*(x+1).^2;
+        a = -8; % lower limit
+        b = 2; % upper limit
+        YLimits = [-0.3 2]; % function value limits for plotting
     %----------------------------------------------------------------------
 end
 
@@ -132,7 +138,7 @@ X = pt(I).c;
 disp(strcat("x = ",string(X)))
 disp(strcat("f = ",string(F)))
 
-%--- optional comparisons
+%--- comparisons
 % display value found using equidistant sampling
 [Feq,Xeq] = bestEquidistant(fun,A,B,funCount);
 disp(strcat("x_eq = ",string(Xeq)))
@@ -142,12 +148,6 @@ disp(strcat("f_eq = ",string(Feq)))
 [X_,F_] = refineMinimizer(fun,pt(I));
 disp(strcat("x_best = ",string(X_)))
 disp(strcat("f_best = ",string(F_)))
-
-abs(X-X_)
-abs(F-F_)
-
-abs(Xeq-X_)
-abs(Feq-F_)
 
 %--------------------------------------------------------------------------
 % update point for the new segment boundaries
@@ -217,104 +217,6 @@ K = find(IsPotOpt);
 end
 
 %--------------------------------------------------------------------------
-% plot helper (to separate the plotting code from the algorithm)
-function output = plot_helper(plotflag,flag,YLimits,in1,in2,in3)
-
-% check if we should plot things
-if ~plotflag
-    output = [];
-    return
-end
-
-% example-specific parameters
-dmin = 1e-8;
-N = 1e4;
-
-% formatting parameters
-pauseTime = 1; % seconds
-MarkerSize = 14;
-niceblue = [77, 121, 167]/255;
-nicered = [225, 86, 86]/255;
-nicegreen = [109, 195, 80]/255;
-
-switch flag
-    %----------------------------------------------------------------------
-    case 1
-        % initialize figure
-        hf = figure; hf.Color = 'w';
-        hf.Position(3:4) = [840 420];
-
-        % initialize subplot 2
-        subplot(1,2,2); hold on
-        ha = gca; ha.LineWidth = 1; ha.XColor = 'k'; ha.YColor = 'k';
-        ha.FontSize = 16; ha.XScale = 'log';
-        xlabel('$d$','interpreter','latex')
-        ylabel('$f$','interpreter','latex')
-        ylim(YLimits)
-        xlim([dmin in1.b-in1.a])
-
-        % initialize subplot 1
-        subplot(1,2,1); hold on
-        ha = gca; ha.LineWidth = 1; ha.XColor = 'k'; ha.YColor = 'k';
-        ha.FontSize = 16;
-        xlabel('$x$','interpreter','latex')
-        ylabel('$f$','interpreter','latex')
-        ylim(YLimits)
-        xlim([in1.a in1.b])
-
-        % plot the function on a fine grid
-        X = linspace(in1.a,in1.b,N);
-        F = in1.fun(X);
-        plot(X,F,'Color','k','LineWidth',1)
-    %----------------------------------------------------------------------
-    case 2
-        % select subplot 2
-        subplot(1,2,2);
-
-        % clear old lines and change old points to light gray
-        if ~isempty(in2.output)
-            delete(in2.output(2:3))
-            in2.output(1).Color = 0.9*[1 1 1];
-        end
-
-        % display all points
-        hp(1) = plot(in2.D,in2.F,'.','Color','k','MarkerSize',MarkerSize);
-
-        % display potentially optimal points
-        hp(2) = plot(in2.D(in2.IsPotOpt),in2.F(in2.IsPotOpt),'.','Color',nicered,'MarkerSize',MarkerSize);
-
-        %
-        Dv = logspace(log10(dmin),log10(max(in2.D)),1000);
-        hp(3) = plot(Dv,min(in2.F)-in2.epsilon*abs(min(in2.F)) + in2.Ltest*Dv,...
-            '-','Color',niceblue,'LineWidth',1);
-
-        % save lines (for deletion later)
-        output = hp;
-
-        % pause for some time
-        pause(pauseTime)
-    %----------------------------------------------------------------------
-    case 3
-        % extract data
-        C = [in3.c];
-        F = [in3.f];
-
-        % select subplot 1
-        subplot(1,2,1);
-
-        % display currently evaluated points
-        plot(C,F,'.','Color',nicered,'MarkerSize',14)
-
-        % display line segments for currently evaluated points
-        h = abs(diff(YLimits));
-        plot([C;C],[YLimits(1),YLimits(1)+h*0.05]'*ones(1,length(in3)),...
-            '-','Color',nicegreen,'LineWidth',0.75)
-    %----------------------------------------------------------------------
-end
-
-end
-
-%--------------------------------------------------------------------------
 % find best function value using equidistant sampling
 function [F,X] = bestEquidistant(fun,a,b,N)
 
@@ -341,5 +243,108 @@ options.TolX = 0;
 
 % find minimum using fminbnd
 [X,F] = fminbnd(@(x) fun(x),pt.a,pt.b,options);
+
+end
+
+%--------------------------------------------------------------------------
+% plot helper (to separate the plotting code from the algorithm)
+function output = plot_helper(plotflag,flag,YLimits,in1,in2,in3)
+
+% check if we should plot things
+if ~plotflag
+    output = [];
+    return
+end
+
+% example-specific parameters
+dmin = 1e-5;
+N = 1e4;
+
+% colors and other parameters
+niceblue = [77, 121, 167]/255;
+nicered = [225, 86, 86]/255;
+nicegreen = [109, 195, 80]/255;
+FontSize = 18;
+LineWidth = 1.5;
+MarkerSize = 14;
+plotOpts = {'LineWidth',LineWidth,'MarkerSize',MarkerSize};
+pauseTime = 1; % seconds
+
+switch flag
+    %----------------------------------------------------------------------
+    case 1
+        % initialize figure
+        hf = figure; hf.Color = 'w'; hold on
+        hf.Position(3:4) = [840 420];
+
+        % initialize subplot 2
+        subplot(1,2,2); hold on
+        ha = gca; ha.XColor = 'k'; ha.YColor = 'k';
+        ha.Color = 'none'; ha.LineWidth = 1; ha.FontSize = FontSize;
+        ha.XScale = 'log';
+        xlabel('$d$','interpreter','latex')
+        ylabel('$f$','interpreter','latex')
+        ylim(YLimits)
+        xlim([dmin in1.b-in1.a])
+
+        % initialize subplot 1
+        subplot(1,2,1); hold on
+        ha = gca; ha.XColor = 'k'; ha.YColor = 'k';
+        ha.Color = 'none'; ha.LineWidth = 1; ha.FontSize = FontSize;
+        xlabel('$x$','interpreter','latex')
+        ylabel('$f$','interpreter','latex')
+        ylim(YLimits)
+        xlim([in1.a in1.b])
+
+        % plot the function on a fine grid
+        X = linspace(in1.a,in1.b,N);
+        F = in1.fun(X);
+        plot(X,F,'Color','k',plotOpts{:})
+    %----------------------------------------------------------------------
+    case 2
+        % select subplot 2
+        subplot(1,2,2);
+
+        % clear old lines and change old points to light gray
+        if ~isempty(in2.output)
+            delete(in2.output(2:3))
+            in2.output(1).Color = 0.9*[1 1 1];
+        end
+
+        % display all points
+        hp(1) = plot(in2.D,in2.F,'.',plotOpts{:},'Color','k');
+
+        % display potentially optimal points
+        hp(2) = plot(in2.D(in2.IsPotOpt),in2.F(in2.IsPotOpt),...
+            '.',plotOpts{:},'Color',nicered);
+
+        %
+        Dv = logspace(log10(dmin),log10(max(in2.D)),1e3);
+        hp(3) = plot(Dv,min(in2.F)-in2.epsilon*abs(min(in2.F)) + in2.Ltest*Dv,...
+            '-',plotOpts{:},'Color',niceblue);
+
+        % save lines (for deletion later)
+        output = hp;
+
+        % pause for some time
+        pause(pauseTime)
+    %----------------------------------------------------------------------
+    case 3
+        % extract data
+        C = [in3.c];
+        F = [in3.f];
+
+        % select subplot 1
+        subplot(1,2,1);
+
+        % display currently evaluated points
+        plot(C,F,'.','Color',nicered,plotOpts{:})
+
+        % display line segments for currently evaluated points
+        h = abs(diff(YLimits));
+        plot([C;C],[YLimits(1),YLimits(1)+h*0.05]'*ones(1,length(in3)),...
+            '-','Color',nicegreen,'LineWidth',LineWidth/2)
+    %----------------------------------------------------------------------
+end
 
 end
