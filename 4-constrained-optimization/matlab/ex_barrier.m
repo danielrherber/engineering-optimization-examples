@@ -13,6 +13,7 @@ x = [0.5;0.5];
 
 % initial barrier parameter
 mu = 1;
+% mu = 1e-6; % <- try this
 
 % barrier term
 phi = @(x) -sum(log(g(x)));
@@ -23,9 +24,9 @@ beta = @(x,mu) f(x) + mu*phi(x);
 % fminunc options
 OPTIONS = optimoptions('fminunc');
 OPTIONS.Display = 'none';
-OPTIONS.StepTolerance = 0;
-OPTIONS.OptimalityTolerance = 0;
-OPTIONS.FunctionTolerance = 0;
+OPTIONS.StepTolerance = 1e-12;
+OPTIONS.OptimalityTolerance = 1e-12;
+OPTIONS.FunctionTolerance = 1e-12;
 
 % go through each iteration
 for iter = 1:7

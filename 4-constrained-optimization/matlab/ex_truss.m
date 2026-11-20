@@ -26,10 +26,10 @@ NONLCON = @(x) constraints(x,stress_limit); % nonlinear constraint function
 OPTIONS = optimoptions('fmincon');
 OPTIONS.Display = 'iter';
 % OPTIONS.FiniteDifferenceType = 'central';
-OPTIONS.MaxFunctionEvaluations = 1e4;
-OPTIONS.OptimalityTolerance = 1e-16;
-OPTIONS.ConstraintTolerance = 1e-16;
-OPTIONS.StepTolerance = 1e-16;
+% OPTIONS.MaxFunctionEvaluations = 1e4;
+% OPTIONS.OptimalityTolerance = 1e-16;
+% OPTIONS.ConstraintTolerance = 1e-16;
+% OPTIONS.StepTolerance = 1e-16;
 
 % solve the optimization problem
 X = fmincon(FUN,X0,A,B,Aeq,Beq,LB,UB,NONLCON,OPTIONS);

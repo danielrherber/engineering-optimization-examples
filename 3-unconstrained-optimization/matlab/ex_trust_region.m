@@ -113,16 +113,16 @@ for k = 1:n
     elseif rho0 <= mu
         D0 = 0.5*D0; % decrease
         disp("Trust region size decreased")
-        disp("Step unsucessful")
+        disp("Step unsuccessful")
     elseif rho0 >= eta
         D0 = 2*D0; % increase
         disp("Trust region size increased")
         x0 = x0 + p0;
-        disp("Step sucessful")
+        disp("Step successful")
     else
         disp("Trust region size the same")
         x0 = x0 + p0;
-        disp("Step sucessful")
+        disp("Step successful")
     end
 
     % plot stuff (see below)

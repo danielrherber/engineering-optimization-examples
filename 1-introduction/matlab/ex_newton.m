@@ -10,7 +10,7 @@ example = 1;
 
 switch example
     case 1 % one-dimensional example
-        f = @(x) [7 3 2 9 4]*[x^4 x^3 x^2 x^1 x^0]';
+        f = @(x) [7 3 2 9 4]*[x^4 x^3 x^2 x^1 x^0]'; % try adding 1
         fd = @(x) [28 9 4 9]*[x^3 x^2 x^1 x^0]';
         X(1) = 0; % initial point
         n = 8; % number of iterations
@@ -35,7 +35,7 @@ switch example
             5*x(1)*x(2) - 9*x(1) - 4*x(2) + 6];
         fd = @(x) [3*x(2) + 7, 3*x(1) + 2; 5*x(2) - 9, 5*x(1) - 4];
         X(:,1) = [1;2]; % initial point
-        n = 5; % number of iterations
+        n = 7; % number of iterations
         xmin = -6; % minimum x value for plotting
         xmax = 6; % maximum x value for plotting
 end
