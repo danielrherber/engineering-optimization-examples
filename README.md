@@ -12,7 +12,7 @@ All examples are available in Matlab, and many have Python equivalents.
 | Linear Optimization | [/2-linear-optimization](2-linear-optimization) | 5        |
 | Unconstrained Optimization | [/3-unconstrained-optimization](3-unconstrained-optimization) | 6         |
 | Constrained Optimization | [/4-constrained-optimization](4-constrained-optimization) | 5         |
-| Derivative-free Optimization | [/5-derivative-free-optimization](5-derivative-free-optimization) | 5          |
+| Derivative-free Optimization | [/5-derivative-free-optimization](5-derivative-free-optimization) | 6          |
 
 ## Running the Matlab Examples
 

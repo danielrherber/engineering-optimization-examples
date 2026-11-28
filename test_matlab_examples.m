@@ -30,6 +30,7 @@ ex{end+1} = @ex_truss; % 4
 ex{end+1} = @ex_direct_1d; % 5
 ex{end+1} = @ex_golden_section; % 5
 ex{end+1} = @ex_matlab_ps_ga_pso; % 5
+ex{end+1} = @ex_production_planning_integer; % 5
 ex{end+1} = @ex_simple_ga; % 5
 ex{end+1} = @ex_simple_pso; % 5
 
@@ -46,8 +47,8 @@ for idx = 1:n
     local_function(ex{idx})
 
     % increment progress bar
-    waitbar(idx/n, f, strcat("Progress: ",string(floor(idx/n*100))," \%"));
-       
+    waitbar(idx/n, f, strcat("Progress: ",string(floor(idx/n*100))," %"));
+
 end
 
 % delete the progress bar
